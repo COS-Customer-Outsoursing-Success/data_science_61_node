@@ -4,7 +4,7 @@ echo Activando el entorno virtual...
 echo ========================================
 
 REM Activar el entorno virtual
-call "C:\Users\Emerson.Aguilar\Documents\git_hub\Chubb\.venv\Scripts\activate.bat"
+call "C:\Users\Emerson.Aguilar\Documents\git_hub\PDC_data_science\.venv\Scripts\activate.bat"
 
 IF ERRORLEVEL 1 (
     echo ❌ Error al activar el entorno virtual.
@@ -25,7 +25,7 @@ echo Ejecutando script de Python...
 echo ========================================
 
 REM Ejecutar el script de Python
-python "C:\Users\Emerson.Aguilar\Documents\git_hub\Chubb\src\_main_process_excel_pdc_chubb.py"
+python "C:\Users\Emerson.Aguilar\Documents\git_hub\PDC_data_science\src\_main_process_excel_pdc.py"
 
 IF ERRORLEVEL 1 (
     echo ❌ Error al ejecutar el script.

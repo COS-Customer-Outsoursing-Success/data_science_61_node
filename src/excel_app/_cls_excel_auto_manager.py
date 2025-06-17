@@ -198,6 +198,18 @@ class Process_Excel:
               else "No se encontraron instancias de Excel abiertas.")
         print("Continuando con el proceso...")
 
+    def esperar_excel_listo(self, excel, tiempo_max=10):
+        inicio = time.time()
+        while time.time() - inicio < tiempo_max:
+            try:
+                if excel.Ready:
+                    return True
+            except:
+                pass
+            time.sleep(0.5)
+        print("⚠️ Excel no respondió dentro del tiempo esperado.")
+        return False
+
     def refresh_archivo_excel(self):
         self.kill_excel()
         """Actualiza todas las conexiones y tablas dinámicas en el archivo Excel."""
@@ -210,7 +222,8 @@ class Process_Excel:
             excel.Visible = True
             print(f"📖 Abriendo libro {self.archivo_excel}...")
             libro = excel.Workbooks.Open(self.archivo_excel)
-            time.sleep(10)
+            time.sleep(8)
+            self.esperar_excel_listo(excel)
             
             print("🔌 Actualizando conexiones...")
             libro.RefreshAll()
@@ -244,9 +257,14 @@ class Process_Excel:
         try:
             for captura_img in self.var_captura_img:
                 try:
+                    excel.CalculateUntilAsyncQueriesDone()
                     hoja = libro.Worksheets(captura_img['hojas_captura_img'])
                     hoja.Activate()
-                    time.sleep(2)
+
+                    self.esperar_excel_listo(excel)
+                    time.sleep(1)
+                    
+                    excel.CalculateUntilAsyncQueriesDone()
                     print(f"Capturando {captura_img['rangos_captura_img']} de {captura_img['hojas_captura_img']}")
 
                     rango = hoja.Range(captura_img['rangos_captura_img'])
