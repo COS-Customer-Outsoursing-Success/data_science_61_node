@@ -262,20 +262,20 @@ class Process_Excel:
                     hoja.Activate()
 
                     self.esperar_excel_listo(excel)
-                    time.sleep(1)
+                    time.sleep(5)
                     
                     excel.CalculateUntilAsyncQueriesDone()
                     print(f"Capturando {captura_img['rangos_captura_img']} de {captura_img['hojas_captura_img']}")
 
                     rango = hoja.Range(captura_img['rangos_captura_img'])
                     rango.CopyPicture(Format=2)
-                    time.sleep(3)
+                    time.sleep(5)
                     
                     img = None
                     for _ in range(3):
                         img = ImageGrab.grabclipboard()
                         if img: break
-                        time.sleep(2)
+                        time.sleep(3)
                         
                     if img:
                         img_path = os.path.join(self.ruta_img, f"{captura_img['hojas_captura_img']}.png")
