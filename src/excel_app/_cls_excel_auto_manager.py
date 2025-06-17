@@ -222,7 +222,7 @@ class Process_Excel:
             excel.Visible = True
             print(f"📖 Abriendo libro {self.archivo_excel}...")
             libro = excel.Workbooks.Open(self.archivo_excel)
-            time.sleep(8)
+            time.sleep(10)
             self.esperar_excel_listo(excel)
             
             print("🔌 Actualizando conexiones...")
