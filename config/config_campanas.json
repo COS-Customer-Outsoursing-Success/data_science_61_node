@@ -1,0 +1,106 @@
+{
+    "FAAPCOS": {
+        "campana_vicidial": "FAAPCOS",
+        "campaign_id": "FAAPCOS - 297",
+        "numero_maximo_listas": 437500
+    },
+    
+    "FAAPCOS1": {
+        "campana_vicidial": "FAAPCOS1",
+        "campaign_id": "FAAPCOS1 - 297",
+        "numero_maximo_listas": 475000
+    },
+
+    "FAAPCOS2": {
+        "campana_vicidial": "FAAPCOS2",
+        "campaign_id": "FAAPCOS2 - 297",
+        "numero_maximo_listas": 512500
+    },
+
+    "FAAPCOS3": {
+        "campana_vicidial": "FAAPCOS3",
+        "campaign_id": "FAAPCOS3 - 297",
+        "numero_maximo_listas": 550000
+    },
+
+    "FAAPCOS4": {
+        "campana_vicidial": "FAAPCOS4",
+        "campaign_id": "FAAPCOS4 - 297",
+        "numero_maximo_listas": 587500
+    },
+
+    "FAAPCOS5": {
+        "campana_vicidial": "FAAPCOS5",
+        "campaign_id": "FAAPCOS5 - 297",
+        "numero_maximo_listas": 625000
+    },
+
+    "FAAPCOS6": {
+        "campana_vicidial": "FAAPCOS5",
+        "campaign_id": "FAAPCOS5 - 297",
+        "numero_maximo_listas": 662500
+    },
+
+    "FAAPCOS8": {
+        "campana_vicidial": "FAAPCOS8",
+        "campaign_id": "FAAPCOS8 - 297",
+        "numero_maximo_listas": 700000
+    },
+
+    "BANCHUB2": {
+        "campana_vicidial": "BANCHUB2",
+        "campaign_id": "BANCHUB2 - 297",
+        "numero_maximo_listas": 1300000
+    }
+    ,
+
+    "COLSAPI2": {
+        "campana_vicidial": "COLSAPI2",
+        "campaign_id": "COLSAPI2 - 297",
+        "numero_maximo_listas": 833826
+    }    ,
+
+    "COMASCOS": {
+        "campana_vicidial": "COMASCOS",
+        "campaign_id": "COMASCOS - 297",
+        "numero_maximo_listas": 1057500
+    },
+
+    "COMOCH": {
+        "campana_vicidial": "COMOCH",
+        "campaign_id": "COMOCH - 297",
+        "numero_maximo_listas": 1112500
+    },
+
+    "COTARCH2": {
+        "campana_vicidial": "COTARCH2",
+        "campaign_id": "COTARCH2 - 297",
+        "numero_maximo_listas": 1222500
+    },
+
+
+    "TMKESB2": {
+        "campana_vicidial": "TMKESB2",
+        "campaign_id": "TMKESB2 - 297",
+        "numero_maximo_listas": 1400000
+    },
+
+    "MOV_CHUB": {
+        "campana_vicidial": "MOV_CHUB",
+        "campaign_id": "MOV_CHUB - 297",
+        "numero_maximo_listas": 1600000
+    },
+
+    "CHUBBAN1": {   
+        "campana_vicidial": "CHUBBAN1",
+        "campaign_id": "CHUBBAN1 - 297",
+        "numero_maximo_listas": 1700000
+    },
+
+    "EMCALI": {
+        "campana_vicidial": "EMCALI",
+        "campaign_id": "EMCALI - 297",
+        "numero_maximo_listas": 1800000
+    }
+
+}

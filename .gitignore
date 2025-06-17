@@ -1,0 +1,6 @@
+# Ignorar entorno virtual y configuración de VSCode
+.venv/
+.vscode/
+# Ignorar todos los archivos .env en cualquier subcarpeta
+**/.env
+

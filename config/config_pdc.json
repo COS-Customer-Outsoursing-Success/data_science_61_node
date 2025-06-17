@@ -1,0 +1,97 @@
+{
+  "config_pdc_chubb": {
+    "schema": "bbdd_cos_bog_chubb",
+    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_chubb",
+
+    "stored_procedures": [
+      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "ban100"}},
+      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "banco_w"}},
+      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "colsubsidio"}},
+      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "coomeva"}},
+      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "emcali"}},
+      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "esb"}},
+      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "falabella"}},
+      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "movistar"}}
+    ],
+
+    "server_vcdl": "172.70.7.41",
+
+    "campanas_vcdl": [
+      "BANCHUB1", "BANCHUB2", "BANCHUB3", "BANCHUB4", "CHUBBAN1", "CHUBSAC",
+      "COLSAPI1", "COLSAPI2", "COLSAPI3", "COLSAPI4", "COLSAPI5", "COLSAPI6",
+      "COMASCOS", "COMOC2", "COMOCH", "COMPAAS2", "COMPAAS3", "COTARCH",
+      "COTARCH2", "COTARCO2", "EMCALI", "FA2APCH", "FA2APCH1", "FA3CHUB1",
+      "FAAPCOS", "FAAPCOS1", "FAAPCOS2", "FAAPCOS3", "FAAPCOS4", "FAAPCOS5",
+      "FAAPCOS6", "FAAPCOS8", "FALINAS1", "MOV_CHUB", "MOVCHUB2", "MOVCHUB3",
+      "MOVCHUB4", "MOVCHUB5", "MOVCHUB6", "MOVCHUB7", "SERFI1", "TMKESB2"
+    ],
+
+    "archivo_excel": "Z:\\WORKFORCE\\03. Mission\\Emerson Aguilar\\14. Chubb\\pdc_chubb_dts.xlsx",
+    "campana": "Chubb",
+
+    "var_captura_img": [
+      {
+        "hojas_captura_img": "IndicadoresXSponsor",
+        "rangos_captura_img": "A1:L15",
+        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+      },
+      {
+        "hojas_captura_img": "VentasXSponsor",
+        "rangos_captura_img": "A1:I27",
+        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares",
+        "rangos_captura_img": "A1:L51",
+        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+      },
+      {
+        "hojas_captura_img": "Detalle_X_Agente_Gen",
+        "rangos_captura_img": "A1:O57",
+        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+      }
+    ]
+  },
+
+  "config_pdc_colsubsidio": {
+    "schema": "bbdd_cos_bog_colsubsidio_servicio_empresas",
+    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_colsubsidio_servicio_empresas",
+
+    "stored_procedures": [
+      {"nombre": "sp_01_marcaciones_desgloce_dts", "parametros": {"param1": 1}}
+        ],
+
+    "server_vcdl": "172.66.7.170",
+
+    "campanas_vcdl": [
+    "COLSAE_1", "COLSAE_2", "COLSAE_3", "COLSAE_4", "COLSAE_5", "COLSAE_6", "COLSAE_7", "COLSAE_8", "COLSAE_9",
+    "COLSAE10", "COLSAE11", "COLSAE12", "COLSAE13", "COLSEREM"
+    ],
+
+    "archivo_excel": "Z:\\WORKFORCE\\03. Mission\\Emerson Aguilar\\14. Chubb\\pdc_colsubsidio_dts.xlsx",
+    "campana": "Colsubsidio",
+
+    "var_captura_img": [
+      {
+        "hojas_captura_img": "Corte_X_Hora",
+        "rangos_captura_img": "A1:L45",
+        "nombre_grupo": "Colsubsidio Empresas - Data Science"
+      },
+      {
+        "hojas_captura_img": "Detalle_X_Tipificacion",
+        "rangos_captura_img": "A1:N29",
+        "nombre_grupo": "Colsubsidio Empresas - Data Science"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares",
+        "rangos_captura_img": "A1:L30",
+        "nombre_grupo": "Colsubsidio Empresas - Data Science"
+      },
+      {
+        "hojas_captura_img": "Detalle_X_Agente_Gen",
+        "rangos_captura_img": "A1:S40",
+        "nombre_grupo": "Colsubsidio Empresas - Data Science"
+      }
+    ]
+  }
+}

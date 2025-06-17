@@ -1,0 +1,28 @@
+{  
+  "xpath_campaign_cargada": "/html/body/center/table[1]/tbody/tr[1]/td[2]/table/tbody/tr[3]/td",
+  "xpath_boton_listas": "//tr[contains(@onclick, 'admin.php?ADD=100')]",
+  "xpath_crear_lista": "//tr[contains(@onclick, 'admin.php?ADD=111')]",
+  "xpath_lista_id": "/html/body/center/table[1]/tbody/tr[1]/td[2]/table/tbody/tr[4]/td/table/tbody/tr/td/font/form/center/table/tbody/tr[1]/td[2]/input",
+  "xpath_name": "/html/body/center/table[1]/tbody/tr[1]/td[2]/table/tbody/tr[4]/td/table/tbody/tr/td/font/form/center/table/tbody/tr[2]/td[2]/input",
+  "xpath_list_description": "/html/body/center/table[1]/tbody/tr[1]/td[2]/table/tbody/tr[4]/td/table/tbody/tr/td/font/form/center/table/tbody/tr[3]/td[2]/input",
+  "xpath_campaign": "/html/body/center/table[1]/tbody/tr[1]/td[2]/table/tbody/tr[4]/td/table/tbody/tr/td/font/form/center/table/tbody/tr[4]/td[2]/select",
+  "xpath_active": "/html/body/center/table[1]/tbody/tr[1]/td[2]/table/tbody/tr[4]/td/table/tbody/tr/td/font/form/center/table/tbody/tr[5]/td[2]/select",
+  "xpath_submit_crear": "//input[@value='SUBMIT']",
+  "xpath_copiar_campos": "//tr[contains(@onclick, 'admin_lists_custom.php?action=COPY_FIELDS_FORM')]",
+  "xpath_copiar_desde_lista": "/html/body/center/table/tbody/tr/td[2]/table/tbody/tr[4]/td/table/tbody/tr/td/font/form/center/table/tbody/tr[1]/td[2]/select",
+  "xpath_copiar_a_lista": "/html/body/center/table/tbody/tr/td[2]/table/tbody/tr[4]/td/table/tbody/tr/td/font/form/center/table/tbody/tr[2]/td[2]/select",
+  "xpath_opcion_de_copiado": "/html/body/center/table/tbody/tr/td[2]/table/tbody/tr[4]/td/table/tbody/tr/td/font/form/center/table/tbody/tr[3]/td[2]/select",
+  "xpath_submit_copiar": "//input[@value='SUBMIT']",
+  "xpath_cargar_contactos": "//tr[contains(@onclick, 'admin_listloader_fourth_gen.php')]", 
+  "xpath_adjuntar_archivo": "/html/body/table[2]/tbody/tr/td/form/table/tbody/tr[1]/td[2]/input", 
+  "xpath_list_id_cargar": "/html/body/table[2]/tbody/tr/td/form/table/tbody/tr[2]/td[2]/font/select",
+  "xpath_indicativo_pais": "/html/body/table[2]/tbody/tr/td/form/table/tbody/tr[3]/td[2]/font/select",
+  "xpath_plantilla_personalizado": "/html/body/table[2]/tbody/tr/td/form/table/tbody/tr[4]/td[2]/font/input[2]",
+  "xpath_submit_enviar_contactos": "//input[@value='SUBMIT']",
+  "xpath_tabla_final_vicidial": "/html/body/table[2]/tbody/tr/td/form/table/tbody/tr",
+  "xpath_tabla_campos_personalizados": "/html/body/table[2]/tbody/tr/td/form/table/tbody/tr",
+  "xpath_submit_cargar_final": "//input[@value='OK TO PROCESS']",
+  "xpath_cargado_final": "/html/body/table[2]/tbody/tr/td/table/tbody/tr[9]/td/form/font",
+  "xpath_submit_enviar_cambios_lista": "//input[@value='SUBMIT ACTIVE LIST CHANGES']"
+  
+}
