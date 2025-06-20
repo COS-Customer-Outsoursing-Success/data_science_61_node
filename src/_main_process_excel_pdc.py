@@ -23,8 +23,6 @@ config_path = os.path.join(project_root, 'config', 'config_pdc.json')
 with open(config_path, 'r', encoding='utf-8') as f:
     config = json.load(f)
 
-sql_file_path = os.path.join(project_root, 'sql', '_sql_max_call_date_chubb.sql')
-
 parametro_num_day = 1
 path_home = str(Path.home())  # -----> Esto devuelve "C:\Users\tu_usuario"
 
@@ -106,7 +104,10 @@ def leer_query(path):
         raise
 
 def env_error(conf):
+
+    sql_file_path = os.path.join(project_root, 'sql', conf["sql_file_name"])
     tabla_alerta = conf["tabla_alerta"]
+
     engine = MySQLConnector().get_connection(database='bbdd_config')
     print("Consultando maxima hora de actualizacion")
 
@@ -166,48 +167,81 @@ def main_multi():
 
 
 if __name__ == '__main__':
-    engine = MySQLConnector().get_connection(database='bbdd_config')
-    print("Consultando maxima hora de actualizacion")
+    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"]]
+    campañas_a_ejecutar = []
 
-    query_max = leer_query(sql_file_path)
-    print(f"Consulta leída, ejecutando...")
-
-    intentos = 0
     intentos_max = 7
-    intervalo_max = 40000
-    intervalo_consulta = 140
+    intervalo_consulta = 140  # segundos
+    intervalo_max = 40  # minutos
 
-    while intentos < intentos_max:
-        print(f"Intento {intentos + 1} de {intentos_max}")
-        try:
-            df = pd.read_sql(query_max, engine)
-            df['hora_ultima_llamada'] = pd.to_datetime(df['hora_ultima_llamada'], errors='coerce')
-            df['hora_ultima_llamada'] = df['hora_ultima_llamada'].fillna(pd.to_datetime('00:00:00'))
+    for conf in config_campanas:
+        intentos = 0
+        ejecutada = False
 
-            hora_ultima_llamada = df['hora_ultima_llamada'].iloc[0].strftime('%H:%M')
-            hora_actual = datetime.now().strftime('%H:%M')
+        while intentos < intentos_max:
+            try:
+                print(f"\n🌀 Evaluando campaña {conf['campana']} (Intento {intentos + 1}/{intentos_max})")
 
-            hora_ultima = datetime.strptime(hora_ultima_llamada, '%H:%M')
-            hora_actual_obj = datetime.strptime(hora_actual, '%H:%M')
-            diferencia_minutos = (hora_actual_obj - hora_ultima).total_seconds() / 60
+                sql_file_path = os.path.join(project_root, 'sql', conf["sql_file_name"])
+                query_max = leer_query(sql_file_path)
 
-            print(f"Hora última llamada: {hora_ultima_llamada}")
-            print(f"Hora actual: {hora_actual}")
-            print(f"Diferencia en minutos: {diferencia_minutos:.2f}")
+                engine = MySQLConnector().get_connection(database='bbdd_config')
+                df = pd.read_sql(query_max, engine)
 
-            if diferencia_minutos < intervalo_max:
-                print(f"Diferencia menor a {intervalo_max} minutos, ejecutando MAIN proceso PDC")
-                main_multi()
-                break
-            else:
-                print(f"Diferencia mayor o igual a {intervalo_max} minutos, esperando {intervalo_consulta/60} minutos e intentando nuevamente...")
+                df['hora_ultima_llamada'] = pd.to_datetime(df['hora_ultima_llamada'], errors='coerce')
+                df['hora_ultima_llamada'] = df['hora_ultima_llamada'].fillna(pd.to_datetime('00:00:00'))
+
+                hora_ultima_llamada = df['hora_ultima_llamada'].iloc[0].strftime('%H:%M')
+                hora_actual = datetime.now().strftime('%H:%M')
+
+                hora_ultima = datetime.strptime(hora_ultima_llamada, '%H:%M')
+                hora_actual_obj = datetime.strptime(hora_actual, '%H:%M')
+                diferencia_minutos = (hora_actual_obj - hora_ultima).total_seconds() / 60
+
+                print(f"📞 Última llamada: {hora_ultima_llamada}")
+                print(f"🕒 Hora actual: {hora_actual}")
+                print(f"⌛ Diferencia: {diferencia_minutos:.2f} minutos")
+
+                if diferencia_minutos < intervalo_max:
+                    campañas_a_ejecutar.append(conf)
+                    print(f"✅ Campaña {conf['campana']} cumple condición. Se ejecutará.")
+                    ejecutada = True
+                    break  # Salimos del ciclo de intentos para esta campaña
+                else:
+                    print(f"⏳ Aún no cumple condición. Esperando {intervalo_consulta / 60:.2f} minutos...")
+                    intentos += 1
+                    time.sleep(intervalo_consulta)
+
+            except Exception as e:
+                print(f"❌ Error evaluando campaña {conf['campana']}: {e}")
                 intentos += 1
                 time.sleep(intervalo_consulta)
-        except Exception as e:
-            print(f"Error al realizar consulta debido a: {e}")
-            intentos += 1
-            time.sleep(intervalo_consulta)
 
-    if intentos == intentos_max:
-        print("Máximos intentos realizados, enviando mensaje de error")
-        env_error()
+        if not ejecutada:
+            print(f"❌ Máximos intentos alcanzados para campaña {conf['campana']}. Enviando error.")
+            env_error(conf)
+
+    if campañas_a_ejecutar:
+        print("\n🚀 Ejecutando campañas que cumplieron...")
+        
+        def main_multi_filtrado(campañas_filtradas):
+            with ThreadPoolExecutor(max_workers=len(campañas_filtradas)) as executor:
+                futures = [executor.submit(ejecutar_vcdl_por_campana, conf) for conf in campañas_filtradas]
+                for future in as_completed(futures):
+                    future.result()
+
+            processors_excel = []
+            for idx, conf in enumerate(campañas_filtradas, start=1):
+                processor = ejecutar_excel_por_campana(conf, idx)
+                processors_excel.append((conf, processor))
+
+            with ThreadPoolExecutor(max_workers=len(processors_excel)) as executor:
+                futures = [executor.submit(ejecutar_envio_pdc_por_campana, conf, processor)
+                           for conf, processor in processors_excel]
+                for future in as_completed(futures):
+                    future.result()
+
+        main_multi_filtrado(campañas_a_ejecutar)
+    else:
+        print("\n❌ Ninguna campaña cumplió con el tiempo requerido tras los intentos.")
+

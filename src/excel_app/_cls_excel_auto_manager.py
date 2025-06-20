@@ -443,7 +443,7 @@ class EnvioErrorPdc:
             'Chrome',
             'User Data',
             'Default',
-            'perfil_selenium'
+            'perfil_selenium_1'
         )
         self.driver_path = os.path.join(
             self.path_home,
