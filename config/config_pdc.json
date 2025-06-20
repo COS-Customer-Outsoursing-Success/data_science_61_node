@@ -1,43 +1,5 @@
 {
 
-    "config_pdc_tmk_bogota": {
-    "schema": "bbdd_cs_bog_tmk",
-    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_tmk_bog",
-    
-    "sql_file_name": "_sql_max_call_date_chubb.sql",
-    
-    "server_vcdl": "soulphone-eigth.groupcos.com",
-
-    "campanas_vcdl": [
-    "Claroven", "CLAROV4", "PORTMANU", "CLARVEN3", "CLARVEN2", "CLAROMOV", "FIDELIZA", "VECOTMK", "VECO_IN"
-    ],
-
-    "archivo_excel": "Z:\\WORKFORCE\\03. Mission\\Emerson Aguilar\\14. Chubb\\pdc_claro_tmk_bogota.xlsx",
-    "campana": "Claro Tmk Bogota",
-
-    "var_captura_img": [
-      {
-        "hojas_captura_img": "Corte_X_Hora",
-        "rangos_captura_img": "A1:L45",
-        "nombre_grupo": "Colsubsidio Empresas - Data Science"
-      },
-      {
-        "hojas_captura_img": "Detalle_X_Tipificacion",
-        "rangos_captura_img": "A1:N29",
-        "nombre_grupo": "Colsubsidio Empresas - Data Science"
-      },
-      {
-        "hojas_captura_img": "Exceso_Auxiliares",
-        "rangos_captura_img": "A1:L30",
-        "nombre_grupo": "Colsubsidio Empresas - Data Science"
-      },
-      {
-        "hojas_captura_img": "Detalle_X_Agente_Gen",
-        "rangos_captura_img": "A1:S40",
-        "nombre_grupo": "Colsubsidio Empresas - Data Science"
-      }
-    ]
-  },
   "config_pdc_chubb": {
     "schema": "bbdd_cos_bog_chubb",
     "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_chubb",
@@ -98,7 +60,7 @@
     "schema": "bbdd_cos_bog_colsubsidio_servicio_empresas",
     "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_colsubsidio_servicio_empresas",
 
-    "sql_file_name": "_sql_max_call_date_chubb.sql",
+    "sql_file_name": "_sql_max_call_date_colsubsidio_empresas.sql",
     
     "stored_procedures": [
       {"nombre": "sp_01_marcaciones_desgloce_dts", "parametros": {"param1": 1}}

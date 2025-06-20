@@ -6,9 +6,11 @@ import os
 import sys
 import pandas as pd
 import time
+import json
 from pathlib import Path
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Lock
 
 current_folder = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(current_folder)
@@ -17,7 +19,6 @@ sys.path.append(current_folder)
 from excel_app._cls_excel_auto_manager import Process_Excel, Envio_Pdc_Wpp, EnvioErrorPdc
 from vicidial._cls_scraping_detalle_agente import DetalleAgenteVcdl
 from conexiones_db._cls_sqlalchemy import MySQLConnector
-import json
 
 config_path = os.path.join(project_root, 'config', 'config_pdc.json')
 with open(config_path, 'r', encoding='utf-8') as f:
@@ -169,15 +170,14 @@ def main_multi():
 if __name__ == '__main__':
     config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"]]
     campañas_a_ejecutar = []
+    lock = Lock()  # Para acceso seguro a la lista compartida
 
     intentos_max = 7
     intervalo_consulta = 140  # segundos
     intervalo_max = 40  # minutos
 
-    for conf in config_campanas:
+    def evaluar_y_agregar(conf):
         intentos = 0
-        ejecutada = False
-
         while intentos < intentos_max:
             try:
                 print(f"\n🌀 Evaluando campaña {conf['campana']} (Intento {intentos + 1}/{intentos_max})")
@@ -203,12 +203,12 @@ if __name__ == '__main__':
                 print(f"⌛ Diferencia: {diferencia_minutos:.2f} minutos")
 
                 if diferencia_minutos < intervalo_max:
-                    campañas_a_ejecutar.append(conf)
+                    with lock:
+                        campañas_a_ejecutar.append(conf)
                     print(f"✅ Campaña {conf['campana']} cumple condición. Se ejecutará.")
-                    ejecutada = True
-                    break  # Salimos del ciclo de intentos para esta campaña
+                    return  # Finaliza este hilo
                 else:
-                    print(f"⏳ Aún no cumple condición. Esperando {intervalo_consulta / 60:.2f} minutos...")
+                    print(f"⏳ Campaña {conf['campana']} no cumple. Esperando {intervalo_consulta / 60:.2f} minutos...")
                     intentos += 1
                     time.sleep(intervalo_consulta)
 
@@ -217,13 +217,19 @@ if __name__ == '__main__':
                 intentos += 1
                 time.sleep(intervalo_consulta)
 
-        if not ejecutada:
-            print(f"❌ Máximos intentos alcanzados para campaña {conf['campana']}. Enviando error.")
-            env_error(conf)
+        print(f"❌ Máximos intentos alcanzados para campaña {conf['campana']}. Enviando error.")
+        env_error(conf)
 
+    # Ejecutar la evaluación de todas las campañas en paralelo
+    with ThreadPoolExecutor(max_workers=len(config_campanas)) as executor:
+        futures = [executor.submit(evaluar_y_agregar, conf) for conf in config_campanas]
+        for future in as_completed(futures):
+            future.result()
+
+    # Ejecutar campañas que sí cumplieron
     if campañas_a_ejecutar:
         print("\n🚀 Ejecutando campañas que cumplieron...")
-        
+
         def main_multi_filtrado(campañas_filtradas):
             with ThreadPoolExecutor(max_workers=len(campañas_filtradas)) as executor:
                 futures = [executor.submit(ejecutar_vcdl_por_campana, conf) for conf in campañas_filtradas]
@@ -244,4 +250,3 @@ if __name__ == '__main__':
         main_multi_filtrado(campañas_a_ejecutar)
     else:
         print("\n❌ Ninguna campaña cumplió con el tiempo requerido tras los intentos.")
-
