@@ -174,7 +174,7 @@ if __name__ == '__main__':
 
     intentos = 0
     intentos_max = 7
-    intervalo_max = 40
+    intervalo_max = 40000
     intervalo_consulta = 140
 
     while intentos < intentos_max:

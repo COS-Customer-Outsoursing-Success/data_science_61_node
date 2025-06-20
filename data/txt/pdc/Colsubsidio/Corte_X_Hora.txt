@@ -1,1 +1,1 @@
-Punto de Control General GENERAL  *Corte 16:00*: *Llamadas Realizadas:* `139` / *Contactos Efectivos* `81` / *Tipificaciones Soul* `237`/ *Efectividad* `117,%`/ *Promedio Agentes_ACD* `00:04:23
+Punto de Control General GENERAL  *Corte 18:00*: *Llamadas Realizadas:* `94` / *Contactos Efectivos* `58` / *Tipificaciones Soul* `163`/ *Efectividad* `165,%`/ *Promedio Agentes_ACD* `00:04:10

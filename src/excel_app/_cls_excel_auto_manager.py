@@ -256,39 +256,53 @@ class Process_Excel:
 
         try:
             for captura_img in self.var_captura_img:
-                try:
-                    excel.CalculateUntilAsyncQueriesDone()
-                    hoja = libro.Worksheets(captura_img['hojas_captura_img'])
-                    hoja.Activate()
+                intentos = 0
+                exito = False
 
-                    self.esperar_excel_listo(excel)
-                    time.sleep(5)
-                    
-                    excel.CalculateUntilAsyncQueriesDone()
-                    print(f"Capturando {captura_img['rangos_captura_img']} de {captura_img['hojas_captura_img']}")
+                while intentos < 3 and not exito:
+                    try:
+                        print(f"🌀 Intento {intentos + 1} para hoja: {captura_img['hojas_captura_img']}")
+                        
+                        excel.CalculateUntilAsyncQueriesDone()
+                        hoja = libro.Worksheets(captura_img['hojas_captura_img'])
+                        hoja.Activate()
 
-                    rango = hoja.Range(captura_img['rangos_captura_img'])
-                    rango.CopyPicture(Format=2)
-                    time.sleep(5)
-                    
-                    img = None
-                    for _ in range(3):
-                        img = ImageGrab.grabclipboard()
-                        if img: break
-                        time.sleep(3)
-                        
-                    if img:
-                        img_path = os.path.join(self.ruta_img, f"{captura_img['hojas_captura_img']}.png")
-                        img.save(img_path, 'PNG')
-                        print(f"✅ Imagen guardada en {img_path}")
-                    else:
-                        print(f"⚠️ No se pudo capturar imagen de {captura_img['hojas_captura_img']}")
-                        
-                except Exception as e:
-                    print(f"⚠️ Error procesando hoja {captura_img['hojas_captura_img']}: {str(e)}")
+                        self.esperar_excel_listo(excel)
+                        time.sleep(5)
+
+                        excel.CalculateUntilAsyncQueriesDone()
+                        print(f"Capturando {captura_img['rangos_captura_img']} de {captura_img['hojas_captura_img']}")
+
+                        rango = hoja.Range(captura_img['rangos_captura_img'])
+                        rango.CopyPicture(Format=2)
+                        time.sleep(5)
+
+                        img = None
+                        for _ in range(3):
+                            img = ImageGrab.grabclipboard()
+                            if img:
+                                break
+                            time.sleep(3)
+
+                        if img:
+                            img_path = os.path.join(self.ruta_img, f"{captura_img['hojas_captura_img']}.png")
+                            img.save(img_path, 'PNG')
+                            print(f"✅ Imagen guardada en {img_path}")
+                            exito = True  # Marca éxito y rompe el while
+                        else:
+                            print(f"⚠️ No se pudo capturar imagen (grabclipboard vacía).")
+
+                    except Exception as e:
+                        print(f"⚠️ Error en intento {intentos + 1} para {captura_img['hojas_captura_img']}: {str(e)}")
+
+                    intentos += 1
+
+                if not exito:
+                    print(f"❌ Fallaron los 3 intentos para capturar {captura_img['hojas_captura_img']}")
 
         except Exception as e:
-            print(f"⚠️ Error en captura de imágenes: {str(e)}")
+            print(f"⚠️ Error general en exportar_imagenes_excel: {str(e)}")
+
 
                     
     def copiar_celdas_txt(self, excel, libro):
