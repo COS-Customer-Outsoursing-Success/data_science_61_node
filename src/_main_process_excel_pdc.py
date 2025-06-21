@@ -104,41 +104,7 @@ def leer_query(path):
         print(f"Error al leer el archivo SQL: {str(e)}")
         raise
 
-def env_error(conf):
-
-    sql_file_path = os.path.join(project_root, 'sql', conf["sql_file_name"])
-    tabla_alerta = conf["tabla_alerta"]
-
-    engine = MySQLConnector().get_connection(database='bbdd_config')
-    print("Consultando maxima hora de actualizacion")
-
-    query_max = leer_query(sql_file_path)
-    print(f"Consulta leída, ejecutando...")
-
-    df = pd.read_sql(query_max, engine)
-    df['hora_ultima_llamada'] = pd.to_datetime(df['hora_ultima_llamada'], errors='coerce')
-    df['hora_ultima_llamada'] = df['hora_ultima_llamada'].fillna(pd.to_datetime('00:00:00'))
-
-    hora_ultima_llamada = df['hora_ultima_llamada'].iloc[0].strftime('%H:%M')
-    hora_actual = datetime.now().strftime('%H:%M')
-
-    hora_ultima = datetime.strptime(hora_ultima_llamada, '%H:%M')
-    hora_actual_obj = datetime.strptime(hora_actual, '%H:%M')
-    diferencia_minutos = (hora_actual_obj - hora_ultima).total_seconds() / 60
-
-    print(f"Hora última llamada: {hora_ultima_llamada}")
-    print(f"Hora actual: {hora_actual}")
-    print(f"Diferencia en minutos: {diferencia_minutos:.2f}")
-
-    processor_env_error = EnvioErrorPdc(
-        tabla_alerta=tabla_alerta,
-        diferencia_minutos=diferencia_minutos
-    )
-    
-    try:
-        processor_env_error.bot_envio_error()
-    except Exception as e:
-        print(f"❌ Error en el proceso de envio wpp: {str(e)}")
+# Funcion que hace que se ejecute cuando cumple el tiempo en paralelo
 
 def main_multi():
 
@@ -166,15 +132,56 @@ def main_multi():
         for future in as_completed(futures):
             future.result()
 
+# Funcion que hace que se envie el error si la tabla no está actualizada
+
+def env_error(conf, index):
+    sql_file_path = os.path.join(project_root, 'sql', conf["sql_file_name"])
+    tabla_alerta = conf["tabla_alerta"]
+    profile_path = os.path.join(
+        path_home, 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default',
+        f'perfil_selenium_{index}'
+    )
+
+    engine = MySQLConnector().get_connection(database='bbdd_config')
+    print("Consultando maxima hora de actualizacion")
+    query_max = leer_query(sql_file_path)
+    print(f"Consulta leída, ejecutando...")
+
+    df = pd.read_sql(query_max, engine)
+    df['hora_ultima_llamada'] = pd.to_datetime(df['hora_ultima_llamada'], errors='coerce')
+    df['hora_ultima_llamada'] = df['hora_ultima_llamada'].fillna(pd.to_datetime('00:00:00'))
+
+    hora_ultima_llamada = df['hora_ultima_llamada'].iloc[0].strftime('%H:%M')
+    hora_actual = datetime.now().strftime('%H:%M')
+
+    hora_ultima = datetime.strptime(hora_ultima_llamada, '%H:%M')
+    hora_actual_obj = datetime.strptime(hora_actual, '%H:%M')
+    diferencia_minutos = (hora_actual_obj - hora_ultima).total_seconds() / 60
+
+    print(f"Hora última llamada: {hora_ultima_llamada}")
+    print(f"Hora actual: {hora_actual}")
+    print(f"Diferencia en minutos: {diferencia_minutos:.2f}")
+
+    processor_env_error = EnvioErrorPdc(
+        tabla_alerta=tabla_alerta,
+        diferencia_minutos=diferencia_minutos,
+        profile_path=profile_path
+    )
+
+    try:
+        processor_env_error.bot_envio_error()
+    except Exception as e:
+        print(f"❌ Error en el proceso de envio wpp: {str(e)}")
 
 if __name__ == '__main__':
     config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"]]
     campañas_a_ejecutar = []
-    lock = Lock()  # Para acceso seguro a la lista compartida
+    campañas_fallidas = []
+    lock = Lock()
 
     intentos_max = 7
-    intervalo_consulta = 140  # segundos
-    intervalo_max = 40  # minutos
+    intervalo_consulta = 120
+    intervalo_max = 40
 
     def evaluar_y_agregar(conf):
         intentos = 0
@@ -206,7 +213,7 @@ if __name__ == '__main__':
                     with lock:
                         campañas_a_ejecutar.append(conf)
                     print(f"✅ Campaña {conf['campana']} cumple condición. Se ejecutará.")
-                    return  # Finaliza este hilo
+                    return
                 else:
                     print(f"⏳ Campaña {conf['campana']} no cumple. Esperando {intervalo_consulta / 60:.2f} minutos...")
                     intentos += 1
@@ -217,16 +224,16 @@ if __name__ == '__main__':
                 intentos += 1
                 time.sleep(intervalo_consulta)
 
-        print(f"❌ Máximos intentos alcanzados para campaña {conf['campana']}. Enviando error.")
-        env_error(conf)
+        with lock:
+            campañas_fallidas.append(conf)
 
-    # Ejecutar la evaluación de todas las campañas en paralelo
+    # Ejecutar evaluación en paralelo
     with ThreadPoolExecutor(max_workers=len(config_campanas)) as executor:
         futures = [executor.submit(evaluar_y_agregar, conf) for conf in config_campanas]
         for future in as_completed(futures):
             future.result()
 
-    # Ejecutar campañas que sí cumplieron
+    # Ejecutar campañas válidas
     if campañas_a_ejecutar:
         print("\n🚀 Ejecutando campañas que cumplieron...")
 
@@ -250,3 +257,12 @@ if __name__ == '__main__':
         main_multi_filtrado(campañas_a_ejecutar)
     else:
         print("\n❌ Ninguna campaña cumplió con el tiempo requerido tras los intentos.")
+
+    # Enviar errores en paralelo
+    if campañas_fallidas:
+        print("\n🚨 Ejecutando envíos de error para campañas fallidas...")
+        with ThreadPoolExecutor(max_workers=len(campañas_fallidas)) as executor:
+            futures = [executor.submit(env_error, conf, idx)
+                    for idx, conf in enumerate(campañas_fallidas, start=1)]
+            for future in as_completed(futures):
+                future.result()

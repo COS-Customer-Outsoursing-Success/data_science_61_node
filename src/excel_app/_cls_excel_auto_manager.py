@@ -432,19 +432,11 @@ class Envio_Pdc_Wpp:
 
 class EnvioErrorPdc:
 
-    def __init__(self, tabla_alerta=None, diferencia_minutos=None):
+    def __init__(self, tabla_alerta=None, diferencia_minutos=None, profile_path=None):
         
         self.path_home = str(Path.home())  # -----> Esto devuelve "C:\Users\tu_usuario"
-        self.profile_path = os.path.join(
-            self.path_home,
-            'AppData',
-            'Local',
-            'Google',
-            'Chrome',
-            'User Data',
-            'Default',
-            'perfil_selenium_1'
-        )
+        self.profile_path = profile_path
+
         self.driver_path = os.path.join(
             self.path_home,
             'Documents',
