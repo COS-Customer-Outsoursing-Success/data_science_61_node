@@ -183,7 +183,7 @@ if __name__ == '__main__':
     intervalo_consulta = 120
     intervalo_max = 40
 
-    def evaluar_y_agregar(conf):
+    def evaluar_y_ejecutar(conf, index):
         intentos = 0
         while intentos < intentos_max:
             try:
@@ -210,9 +210,11 @@ if __name__ == '__main__':
                 print(f"⌛ Diferencia: {diferencia_minutos:.2f} minutos")
 
                 if diferencia_minutos < intervalo_max:
-                    with lock:
-                        campañas_a_ejecutar.append(conf)
-                    print(f"✅ Campaña {conf['campana']} cumple condición. Se ejecutará.")
+                    print(f"✅ Campaña {conf['campana']} cumple condición. Ejecutando proceso completo.")
+                    ejecutar_vcdl_por_campana(conf)
+                    processor = ejecutar_excel_por_campana(conf, index)
+                    if processor:
+                        ejecutar_envio_pdc_por_campana(conf, processor)
                     return
                 else:
                     print(f"⏳ Campaña {conf['campana']} no cumple. Esperando {intervalo_consulta / 60:.2f} minutos...")
@@ -224,12 +226,16 @@ if __name__ == '__main__':
                 intentos += 1
                 time.sleep(intervalo_consulta)
 
-        with lock:
-            campañas_fallidas.append(conf)
+        # Si no se cumplió, enviar error
+        print(f"❌ Máximos intentos alcanzados para campaña {conf['campana']}. Enviando error.")
+        env_error(conf, index)
 
-    # Ejecutar evaluación en paralelo
+
     with ThreadPoolExecutor(max_workers=len(config_campanas)) as executor:
-        futures = [executor.submit(evaluar_y_agregar, conf) for conf in config_campanas]
+        futures = [
+            executor.submit(evaluar_y_ejecutar, conf, idx)
+            for idx, conf in enumerate(config_campanas, start=1)
+        ]
         for future in as_completed(futures):
             future.result()
 
