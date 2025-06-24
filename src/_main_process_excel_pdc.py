@@ -179,8 +179,8 @@ if __name__ == '__main__':
     campañas_fallidas = []
     lock = Lock()
 
-    intentos_max = 7
-    intervalo_consulta = 120
+    intentos_max = 5
+    intervalo_consulta = 300
     intervalo_max = 40
 
     def evaluar_y_ejecutar(conf, index):
