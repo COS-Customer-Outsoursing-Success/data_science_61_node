@@ -173,6 +173,7 @@ def env_error(conf, index):
     except Exception as e:
         print(f"❌ Error en el proceso de envio wpp: {str(e)}")
 
+excel_lock = Lock()  # 🧠 Lock global solo para Excel
 if __name__ == '__main__':
     config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"]]
     campañas_a_ejecutar = []
@@ -212,9 +213,11 @@ if __name__ == '__main__':
                 if diferencia_minutos < intervalo_max:
                     print(f"✅ Campaña {conf['campana']} cumple condición. Ejecutando proceso completo.")
                     ejecutar_vcdl_por_campana(conf)
-                    processor = ejecutar_excel_por_campana(conf, index)
+                    with excel_lock:
+                        processor = ejecutar_excel_por_campana(conf, index)
                     if processor:
                         ejecutar_envio_pdc_por_campana(conf, processor)
+
                     return
                 else:
                     print(f"⏳ Campaña {conf['campana']} no cumple. Esperando {intervalo_consulta / 60:.2f} minutos...")
