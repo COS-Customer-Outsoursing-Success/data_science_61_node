@@ -52,6 +52,11 @@
         "hojas_captura_img": "Detalle_X_Agente_Gen",
         "rangos_captura_img": "A1:O57",
         "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+      },
+      {
+        "hojas_captura_img": "Ausentismo",
+        "rangos_captura_img": "A1:P55",
+        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
       }
     ]
   },
