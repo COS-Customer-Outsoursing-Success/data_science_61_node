@@ -101,6 +101,11 @@
         "hojas_captura_img": "Detalle_X_Agente_Gen",
         "rangos_captura_img": "A1:S40",
         "nombre_grupo": "Colsubsidio Empresas - Data Science"
+      },
+      {
+        "hojas_captura_img": "Ausentismo",
+        "rangos_captura_img": "A1:P40",
+        "nombre_grupo": "Colsubsidio Empresas - Data Science"
       }
     ]
   }
