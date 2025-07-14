@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 @author: Ronal.Barberi
+@edit: Emerson Aguilar Cruz
 """
 
 from selenium import webdriver
@@ -22,10 +23,15 @@ class WebScraping_Chrome:
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--no-sandbox")
+        options.add_argument("--ignore-certificate-errors")
+        options.add_argument("--allow-running-insecure-content")  # Permitir contenido inseguro
+        options.add_argument("--disable-web-security")
+        options.add_argument("--disable-dev-shm-usage") 
         prefs = {
             "download.prompt_for_download": False,
             "download.directory_upgrade": True,
-            "safebrowsing.enabled": True
+            "safebrowsing.enabled": True,
+            "safebrowsing.disable_download_protection": True
         }
         options.add_experimental_option("prefs", prefs)
         service = Service(executable_path=driver_path)
@@ -42,11 +48,22 @@ class WebScraping_Chrome:
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--no-sandbox")
+        options.add_argument("--disable-popup-blocking")
+        options.add_argument("--disable-notifications")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--ignore-certificate-errors")
+        options.add_argument("--allow-running-insecure-content")  # Permitir contenido inseguro
+        options.add_argument("--disable-web-security")
+        options.add_argument("--disable-dev-shm-usage") 
         prefs = {
             "download.default_directory": download_path,
             "download.prompt_for_download": False,
             "download.directory_upgrade": True,
-            "safebrowsing.enabled": True
+            "safebrowsing.enabled": True,
+            "safebrowsing.disable_download_protection": True
         }
         options.add_experimental_option("prefs", prefs)
         service = Service(executable_path=driver_path)

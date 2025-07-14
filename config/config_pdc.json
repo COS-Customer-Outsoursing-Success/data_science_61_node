@@ -17,6 +17,7 @@
       {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "movistar"}}
     ],
 
+    "http_vcdl": "http", 
     "server_vcdl": "172.70.7.41",
 
     "campanas_vcdl": [
@@ -41,7 +42,7 @@
       {
         "hojas_captura_img": "VentasXSponsor",
         "rangos_captura_img": "A1:I27",
-        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+        "nombre_grupo": "Chubb - COS TMK"
       },
       {
         "hojas_captura_img": "Exceso_Auxiliares",
@@ -71,6 +72,7 @@
       {"nombre": "sp_01_marcaciones_desgloce_dts", "parametros": {"param1": 1}}
         ],
 
+    "http_vcdl": "http",
     "server_vcdl": "172.66.7.170",
 
     "campanas_vcdl": [
@@ -108,5 +110,62 @@
         "nombre_grupo": "Colsubsidio Empresas - Data Science"
       }
     ]
+  },
+
+  "config_pdc_wom_cobranza": {
+    "schema": "bbdd_cs_bog_wom_cobranza",
+    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_wom_cobranza",
+
+    "sql_file_name": "_sql_max_call_date_wom_cobranza.sql",
+    
+    "stored_procedures": [],
+    
+    "http_vcdl": "https", 
+    "server_vcdl": "soulphone-fiveone.groupcos.com",
+
+    "campanas_vcdl": [
+          "WOMCOBR1", "WOMCOBR2", "WOMCOBR3", "WOMCOBR4", "WOMCOBR5", "WOMCOBR6", "WOMCOBRA"
+    ],
+
+    "archivo_excel": "Z:\\WORKFORCE\\03. Mission\\Emerson Aguilar\\14. Chubb\\pdc_wom_cobranza_dts.xlsx",
+    "campana": "Wom Cobranza",
+
+    "var_captura_img": [
+      {
+        "hojas_captura_img": "Intervalo_Wom_C",
+        "rangos_captura_img": "A1:L45",
+        "nombre_grupo": "WOM Cobranza - DS"
+      },
+      {
+        "hojas_captura_img": "Intervalo_Wom_NC",
+        "rangos_captura_img": "A1:L45",
+        "nombre_grupo": "WOM Cobranza - DS"
+      },
+      {
+        "hojas_captura_img": "Intervalo_Wom_PC",
+        "rangos_captura_img": "A1:L45",
+        "nombre_grupo": "WOM Cobranza - DS"
+      },
+      {
+        "hojas_captura_img": "Detalle X Agente",
+        "rangos_captura_img": "A1:M30",
+        "nombre_grupo": "WOM Cobranza - DS"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares",
+        "rangos_captura_img": "B1:M24",
+        "nombre_grupo": "WOM Cobranza - DS"
+      },
+      {
+        "hojas_captura_img": "Detalle X Tipificacion",
+        "rangos_captura_img": "A1:N35",
+        "nombre_grupo": "WOM Cobranza - DS"
+      },
+      {
+        "hojas_captura_img": "Ausentismo",
+        "rangos_captura_img": "A1:P37",
+        "nombre_grupo": "WOM Cobranza - DS"
+      }
+    ] 
   }
 }

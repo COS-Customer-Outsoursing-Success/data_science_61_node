@@ -14,17 +14,18 @@ from conexiones_db._cls_sqlalchemy import MySQLConnector
 from web_scraping._cls_webscraping import WebScraping_Chrome
 
 class DetalleAgenteVcdl:
-    def __init__(self, current_folder=None, project_root=None, user_vcdl=None, pass_vcdl=None, 
+    def __init__(self, current_folder=None, project_root=None, http_vcdl=None, user_vcdl=None, pass_vcdl=None, 
                  server_vcdl=None, campanas_vcdl=None, download_path=None, schema=None, table=None):
         
         self.current_folder = current_folder 
         self.project_root = project_root
-        self.path_home = str(Path.home())  # -----> "C:\Users\tu_usuario"
+        self.path_home = str(Path.home())
+        self.http_vcdl = http_vcdl 
         self.user_vcdl = user_vcdl
         self.pass_vcdl = pass_vcdl
         self.server_vcdl = server_vcdl
         self.campanas_vcdl = campanas_vcdl or []
-        self.url_vcdl = f'http://{self.user_vcdl}:{self.pass_vcdl}@{self.server_vcdl}/vicidial/AST_agent_time_detail.php'
+        self.url_vcdl = f'{self.http_vcdl}://{self.user_vcdl}:{self.pass_vcdl}@{self.server_vcdl}/vicidial/AST_agent_time_detail.php'
         self.download_path = download_path
         self.rutas_eliminar = [download_path] if download_path else []
         os.makedirs(self.download_path, exist_ok=True)
@@ -74,24 +75,28 @@ class DetalleAgenteVcdl:
             raise ValueError("Missing VCDL credentials")
             
         driver = WebScraping_Chrome.Webdriver_ChrDP_DP(self.driver_path, self.download_path)
-
+        
         try:
+            self.remove_existing_files()
+            
             WebScraping_Chrome.WebScraping_Acces(driver, self.url_vcdl)
             WebScraping_Chrome.WebScraping_Wait(driver, 150, self.xpath_campanas)
+            time.sleep(1)
 
             WebScraping_Chrome.WebScraping_Wait_Clickeable(driver, 150, self.xpath_campanas)
             WebScraping_Chrome.WebScraping_Select_Xpath(driver, self.xpath_campanas, self.campanas_vcdl)
             print(f"Campañas {self.campanas_vcdl} seleccionadas")
+            time.sleep(1)
             
             WebScraping_Chrome.WebScraping_Wait(driver, 150, self.xpath_grupos_usuario)
             WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_grupos_usuario)
             print("Grupos de usuario seleccionados")
+            time.sleep(1)
 
             WebScraping_Chrome.WebScraping_Wait(driver, 150, self.xpath_remitir)
             WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_remitir)
             print("Consultado informacion detalle agente")
-            
-            self.remove_existing_files()
+            time.sleep(1)
             
             WebScraping_Chrome.WebScraping_Wait(driver, 150, self.xpath_descargar)
             WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_descargar)

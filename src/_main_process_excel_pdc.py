@@ -25,16 +25,15 @@ with open(config_path, 'r', encoding='utf-8') as f:
     config = json.load(f)
 
 parametro_num_day = 1
-path_home = str(Path.home())  # -----> Esto devuelve "C:\Users\tu_usuario"
+path_home = str(Path.home())
 
-
-# -- Configuracion de vicidial para cada campaña --
 def ejecutar_vcdl_por_campana(conf):
     try:
         print(f"📥 Iniciando VCDL: {conf['campana']}")
         processor_detalle_ag = DetalleAgenteVcdl(
             schema=conf["schema"], 
             table='tb_detalle_agente_daily_new_dts',
+            http_vcdl = conf['http_vcdl'],
             user_vcdl='1031120694',
             pass_vcdl='wfm1031120694',
             server_vcdl=conf["server_vcdl"],
@@ -49,7 +48,6 @@ def ejecutar_vcdl_por_campana(conf):
     except Exception as e:
         print(f"❌ Error VCDL en campaña {conf['campana']}: {str(e)}")
 
-# -- configuracion de excel para cada campaña --
 def ejecutar_excel_por_campana(conf, index=0):
     profile_path = os.path.join(
         path_home,
@@ -104,35 +102,28 @@ def leer_query(path):
         print(f"Error al leer el archivo SQL: {str(e)}")
         raise
 
-# Funcion que hace que se ejecute cuando cumple el tiempo en paralelo
-
 def main_multi():
 
-    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"]]
+    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_wom_cobranza"]]
 
-    # -- Ejecutar VCDL en paralelo --
     print("🚀 Ejecutando VCDL en paralelo...")
     with ThreadPoolExecutor(max_workers=len(config_campanas)) as executor:
         futures = [executor.submit(ejecutar_vcdl_por_campana, conf) for conf in config_campanas]
         for future in as_completed(futures):
             future.result()
 
-    # -- Ejecutar Excel uno por uno con perfil incremental --
     print("📊 Ejecutando Excel en secuencia...")
     processors_excel = []
     for idx, conf in enumerate(config_campanas, start=1):
         processor = ejecutar_excel_por_campana(conf, idx)
-        processors_excel.append((conf, processor))  # -- lo usamos luego para envío --
+        processors_excel.append((conf, processor))
 
-    # -- Ejecutar Envío PDC en paralelo (usa processors ya construidos) --
     print("🚀 Ejecutando ENVIO PDC en paralelo...")
     with ThreadPoolExecutor(max_workers=len(processors_excel)) as executor:
         futures = [executor.submit(ejecutar_envio_pdc_por_campana, conf, processor)
                    for conf, processor in processors_excel]
         for future in as_completed(futures):
             future.result()
-
-# Funcion que hace que se envie el error si la tabla no está actualizada
 
 def env_error(conf, index):
     sql_file_path = os.path.join(project_root, 'sql', conf["sql_file_name"])
@@ -173,16 +164,16 @@ def env_error(conf, index):
     except Exception as e:
         print(f"❌ Error en el proceso de envio wpp: {str(e)}")
 
-excel_lock = Lock()  # 🧠 Lock global solo para Excel
+excel_lock = Lock()
 if __name__ == '__main__':
-    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"]]
+    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_wom_cobranza"]]
     campañas_a_ejecutar = []
     campañas_fallidas = []
     lock = Lock()
 
     intentos_max = 5
     intervalo_consulta = 300
-    intervalo_max = 400
+    intervalo_max = 45
 
     def evaluar_y_ejecutar(conf, index):
         intentos = 0
@@ -229,7 +220,6 @@ if __name__ == '__main__':
                 intentos += 1
                 time.sleep(intervalo_consulta)
 
-        # Si no se cumplió, enviar error
         print(f"❌ Máximos intentos alcanzados para campaña {conf['campana']}. Enviando error.")
         env_error(conf, index)
 
@@ -242,7 +232,6 @@ if __name__ == '__main__':
         for future in as_completed(futures):
             future.result()
 
-    # Ejecutar campañas válidas
     if campañas_a_ejecutar:
         print("\n🚀 Ejecutando campañas que cumplieron...")
 
@@ -267,7 +256,6 @@ if __name__ == '__main__':
     else:
         print("\n❌ Ninguna campaña cumplió con el tiempo requerido tras los intentos.")
 
-    # Enviar errores en paralelo
     if campañas_fallidas:
         print("\n🚨 Ejecutando envíos de error para campañas fallidas...")
         with ThreadPoolExecutor(max_workers=len(campañas_fallidas)) as executor:
