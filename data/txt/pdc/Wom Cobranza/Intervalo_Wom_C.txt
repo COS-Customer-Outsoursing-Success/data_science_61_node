@@ -1,1 +1,1 @@
-Punto de Control General CHURN  *Corte 14:00*: *Llamadas Realizadas:* `4567` / *Contactos Efectivos* `77` / *Contactos No Efectivos* `35`/ *Efectividad* `59,8%`/ *Promedio Agentes_ACD* `00:01:14
+Punto de Control General CHURN  *Corte 17:00*: *Llamadas Realizadas:* `2116` / *Contactos Efectivos* `38` / *Contactos No Efectivos* `12`/ *Efectividad* `68%`/ *Promedio Agentes_ACD* `00:05:39
