@@ -104,7 +104,7 @@ def leer_query(path):
 
 def main_multi():
 
-    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_wom_cobranza"]]
+    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"]]
 
     print("🚀 Ejecutando VCDL en paralelo...")
     with ThreadPoolExecutor(max_workers=len(config_campanas)) as executor:
@@ -166,7 +166,7 @@ def env_error(conf, index):
 
 excel_lock = Lock()
 if __name__ == '__main__':
-    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_wom_cobranza"]]
+    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"]]
     campañas_a_ejecutar = []
     campañas_fallidas = []
     lock = Lock()

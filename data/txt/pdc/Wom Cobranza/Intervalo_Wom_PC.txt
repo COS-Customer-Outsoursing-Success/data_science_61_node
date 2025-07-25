@@ -1,1 +1,1 @@
-Punto de Control General PRE CHURN  *Corte 17:00*: *Llamadas Realizadas:* `1742` / *Contactos Efectivos* `39` / *Contactos No Efectivos* `14`/ *Efectividad* `66,0%`/ *Promedio Agentes_ACD* `00:00:00
+Punto de Control General PRE CHURN  *Corte 09:00*: *Llamadas Realizadas:* `1535` / *Contactos Efectivos* `33` / *Contactos No Efectivos* `26`/ *Efectividad* `49,1%`/ *Promedio Agentes_ACD* `00:01:23

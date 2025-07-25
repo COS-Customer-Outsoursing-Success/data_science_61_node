@@ -422,7 +422,7 @@ class Envio_Pdc_Wpp:
                             WebScraping_Chrome.WebScraping_Wait(driver, 120, self.xpath_boton_enviar)
                             WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_boton_enviar)
 
-                            time.sleep(8)
+                            time.sleep(20)
                     else:
                         print(f"⚠️ El archivo de texto {texto_path} no se encuentra.")
                 except Exception as e:

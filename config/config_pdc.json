@@ -167,5 +167,52 @@
         "nombre_grupo": "WOM Cobranza - DS"
       }
     ] 
+  },
+
+  "config_pdc_colsubsidio_atraccion": {
+    "schema": "bbdd_cos_bog_colsubsidio_atraccion",
+    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_colsubsidio_atraccion",
+
+    "sql_file_name": "_sql_max_call_date_colsubsidio_atraccion.sql",
+    
+    "stored_procedures": [],
+    
+    "http_vcdl": "http", 
+    "server_vcdl": "172.66.7.112:39743",
+
+    "campanas_vcdl": [
+          "COLCAMAR"
+    ],
+
+    "archivo_excel": "Z:\\WORKFORCE\\03. Mission\\Emerson Aguilar\\14. Chubb\\pdc_colsubsidio_atraccion_dts.xlsx",
+    "campana": "Colsubsidio Atraccion",
+
+    "var_captura_img": [
+      {
+        "hojas_captura_img": "Corte_X_Hora",
+        "rangos_captura_img": "A1:L45",
+        "nombre_grupo": "Colsubsidio Empresas - Data Science"
+      },
+      {
+        "hojas_captura_img": "Detalle_X_Tipificacion",
+        "rangos_captura_img": "A1:N29",
+        "nombre_grupo": "Colsubsidio Empresas - Data Science"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares",
+        "rangos_captura_img": "A1:L30",
+        "nombre_grupo": "Colsubsidio Empresas - Data Science"
+      },
+      {
+        "hojas_captura_img": "Detalle_X_Agente_Gen",
+        "rangos_captura_img": "A1:T40",
+        "nombre_grupo": "Colsubsidio Empresas - Data Science"
+      },
+      {
+        "hojas_captura_img": "Ausentismo",
+        "rangos_captura_img": "A1:P40",
+        "nombre_grupo": "Colsubsidio Empresas - Data Science"
+      }
+    ] 
   }
 }
