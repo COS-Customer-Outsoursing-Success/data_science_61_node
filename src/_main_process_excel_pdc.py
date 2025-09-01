@@ -28,7 +28,7 @@ parametro_num_day = 1
 path_home = str(Path.home())
 
 def ejecutar_vcdl_por_campana(conf):
-    
+
     try:
         print(f"📥 Iniciando VCDL: {conf['campana']}")
         processor_detalle_ag = DetalleAgenteVcdl(
@@ -36,7 +36,7 @@ def ejecutar_vcdl_por_campana(conf):
             table='tb_detalle_agente_daily_new_dts',
             http_vcdl = conf['http_vcdl'],
             user_vcdl='1031120694',
-            pass_vcdl='wfm1031120694',
+            pass_vcdl=conf['pass_vcdl'],
             server_vcdl=conf["server_vcdl"],
             campanas_vcdl=conf["campanas_vcdl"],
             download_path=os.path.join(project_root, 'data', 'detalle_agente', conf["campana"])
@@ -61,7 +61,7 @@ def ejecutar_excel_por_campana(conf, index=0):
         f'perfil_selenium_{index}'
     )
     try:
-        print(f"📊 Iniciando Excel: {conf['campana']} con perfil {profile_path}")
+        print(f"Iniciando Excel: {conf['campana']} con perfil {profile_path}")
         
         processor_excel = Process_Excel(
             profile_path=profile_path,
@@ -81,7 +81,7 @@ def ejecutar_excel_por_campana(conf, index=0):
         return processor_excel
 
     except Exception as e:
-        print(f"❌ Error Excel en campaña {conf['campana']}: {str(e)}")
+        print(f"Error: Error Excel en campaña {conf['campana']}: {str(e)}")
         return None
 
 def ejecutar_envio_pdc_por_campana(conf, processor_excel):
@@ -90,7 +90,7 @@ def ejecutar_envio_pdc_por_campana(conf, processor_excel):
     try:
         processor_envio_wpp.env_pdc_bot()
     except Exception as e:
-        print(f"❌ Error en el proceso de envio wpp: {str(e)}")
+        print(f"Error: Error en el proceso de envio wpp: {str(e)}")
 
 def leer_query(path):
     try:
@@ -105,7 +105,7 @@ def leer_query(path):
 
 def main_multi():
 
-    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"]]
+    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"], config["config_pdc_axa_colpatria"]]
 
     print("🚀 Ejecutando VCDL en paralelo...")
     with ThreadPoolExecutor(max_workers=len(config_campanas)) as executor:
@@ -167,13 +167,15 @@ def env_error(conf, index):
 
 excel_lock = Lock()
 if __name__ == '__main__':
-    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"]]
+
+    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"], config["config_pdc_axa_colpatria"]]
+    
     campañas_a_ejecutar = []
     campañas_fallidas = []
     lock = Lock()
 
     intentos_max = 5
-    intervalo_consulta = 300
+    intervalo_consulta =300
     intervalo_max = 120
 
     def evaluar_y_ejecutar(conf, index):

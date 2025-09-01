@@ -18,6 +18,7 @@
     ],
 
     "http_vcdl": "http", 
+    "pass_vcdl": "wfm1031120694",    
     "server_vcdl": "172.70.7.41",
 
     "campanas_vcdl": [
@@ -69,10 +70,13 @@
     "sql_file_name": "_sql_max_call_date_colsubsidio_empresas.sql",
     
     "stored_procedures": [
+
       {"nombre": "sp_01_marcaciones_desgloce_dts", "parametros": {"param1": 1}}
-        ],
+
+    ],
 
     "http_vcdl": "http",
+    "pass_vcdl": "wfm1031120694",    
     "server_vcdl": "172.66.7.170",
 
     "campanas_vcdl": [
@@ -121,6 +125,7 @@
     "stored_procedures": [],
     
     "http_vcdl": "https", 
+    "pass_vcdl": "wfm1031120694",    
     "server_vcdl": "soulphone-fiveone.groupcos.com",
 
     "campanas_vcdl": [
@@ -170,14 +175,16 @@
   },
 
   "config_pdc_colsubsidio_atraccion": {
+
     "schema": "bbdd_cos_bog_colsubsidio_atraccion",
     "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_colsubsidio_atraccion",
-
+  
     "sql_file_name": "_sql_max_call_date_colsubsidio_atraccion.sql",
-    
+
     "stored_procedures": [],
     
     "http_vcdl": "http", 
+    "pass_vcdl": "wfm1031120694",
     "server_vcdl": "172.66.7.112:39743",
 
     "campanas_vcdl": [
@@ -209,5 +216,83 @@
         "nombre_grupo": "Colsubsidio Empresas - Data Science"
       }
     ] 
+  },
+
+  "config_pdc_axa_colpatria": {
+
+    "schema": "bbdd_cos_bog_grupo_axa",
+    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_axa",
+  
+    "sql_file_name": "_sql_max_call_date_axa.sql",
+
+    "stored_procedures": [{"nombre": "sp_01_marcaciones_desgloce_dts", "parametros": {"param1": 1}}],
+    
+    "http_vcdl": "https", 
+    "pass_vcdl": "1031120694",
+    "server_vcdl": "soulphone-nine.groupcos.com.co",
+
+    "campanas_vcdl": [
+
+      "AXA_BIEN",
+      "AXA_COLP",
+      "AXA_COME",
+      "AXA_COOV",
+      "AXA_DESR",
+      "AXA_DIGT",
+      "AXA_FA10",
+      "AXA_FA11",
+      "AXA_FAL1",
+      "AXA_FAL2",
+      "AXA_FAL3",
+      "AXA_FAL4",
+      "AXA_FAL5",
+      "AXA_FAL6",
+      "AXA_FAL7",
+      "AXA_FAL8",
+      "AXA_FINC",
+      "AXA_MULT",
+      "AXA_OCEN",
+      "AXA_PICH",
+      "AXA_PLAN",
+      "AXA_REND",
+      "AXA_RENO",
+      "AXA_RETE",
+      "AXA_REVI",
+      "AXA_SALU",
+      "AXA_WHAT",
+      "AXA_WHDE"
+    ],
+
+    "archivo_excel": "Z:\\WORKFORCE\\03. Mission\\Emerson Aguilar\\14. Chubb\\pdc_axa_dts.xlsx",
+    
+    "campana": "Axa Colpatria",
+
+    "var_captura_img": [
+      {
+        "hojas_captura_img": "IndicadoresXSponsor",
+        "rangos_captura_img": "A1:L15",
+        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+      },
+      {
+        "hojas_captura_img": "VentasXSponsor",
+        "rangos_captura_img": "A1:I27",
+        "nombre_grupo": "Chubb - COS TMK"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares",
+        "rangos_captura_img": "A1:L51",
+        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+      },
+      {
+        "hojas_captura_img": "Detalle_X_Agente_Gen",
+        "rangos_captura_img": "A1:O57",
+        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+      },
+      {
+        "hojas_captura_img": "Ausentismo",
+        "rangos_captura_img": "A1:P55",
+        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+      }
+    ]
   }
 }
