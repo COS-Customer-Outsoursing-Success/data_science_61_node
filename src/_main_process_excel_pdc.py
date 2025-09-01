@@ -173,7 +173,7 @@ if __name__ == '__main__':
 
     intentos_max = 5
     intervalo_consulta = 300
-    intervalo_max = 45
+    intervalo_max = 70
 
     def evaluar_y_ejecutar(conf, index):
         intentos = 0
