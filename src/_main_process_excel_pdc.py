@@ -28,6 +28,7 @@ parametro_num_day = 1
 path_home = str(Path.home())
 
 def ejecutar_vcdl_por_campana(conf):
+    
     try:
         print(f"📥 Iniciando VCDL: {conf['campana']}")
         processor_detalle_ag = DetalleAgenteVcdl(
@@ -162,7 +163,7 @@ def env_error(conf, index):
     try:
         processor_env_error.bot_envio_error()
     except Exception as e:
-        print(f"❌ Error en el proceso de envio wpp: {str(e)}")
+        print(f"Error: Error en el proceso de envio wpp: {str(e)}")
 
 excel_lock = Lock()
 if __name__ == '__main__':
@@ -173,13 +174,13 @@ if __name__ == '__main__':
 
     intentos_max = 5
     intervalo_consulta = 300
-    intervalo_max = 70
+    intervalo_max = 120
 
     def evaluar_y_ejecutar(conf, index):
         intentos = 0
         while intentos < intentos_max:
             try:
-                print(f"\n🌀 Evaluando campaña {conf['campana']} (Intento {intentos + 1}/{intentos_max})")
+                print(f"\n Evaluando campaña {conf['campana']} (Intento {intentos + 1}/{intentos_max})")
 
                 sql_file_path = os.path.join(project_root, 'sql', conf["sql_file_name"])
                 query_max = leer_query(sql_file_path)
@@ -197,12 +198,12 @@ if __name__ == '__main__':
                 hora_actual_obj = datetime.strptime(hora_actual, '%H:%M')
                 diferencia_minutos = (hora_actual_obj - hora_ultima).total_seconds() / 60
 
-                print(f"📞 Última llamada: {hora_ultima_llamada}")
-                print(f"🕒 Hora actual: {hora_actual}")
-                print(f"⌛ Diferencia: {diferencia_minutos:.2f} minutos")
+                print(f"--- Última llamada: {hora_ultima_llamada}")
+                print(f"--- Hora actual: {hora_actual}")
+                print(f"--- Diferencia: {diferencia_minutos:.2f} minutos")
 
                 if diferencia_minutos < intervalo_max:
-                    print(f"✅ Campaña {conf['campana']} cumple condición. Ejecutando proceso completo.")
+                    print(f"Campaña {conf['campana']} cumple condición. Ejecutando proceso completo.")
                     ejecutar_vcdl_por_campana(conf)
                     with excel_lock:
                         processor = ejecutar_excel_por_campana(conf, index)
@@ -211,16 +212,16 @@ if __name__ == '__main__':
 
                     return
                 else:
-                    print(f"⏳ Campaña {conf['campana']} no cumple. Esperando {intervalo_consulta / 60:.2f} minutos...")
+                    print(f"Campaña {conf['campana']} no cumple. Esperando {intervalo_consulta / 60:.2f} minutos...")
                     intentos += 1
                     time.sleep(intervalo_consulta)
 
             except Exception as e:
-                print(f"❌ Error evaluando campaña {conf['campana']}: {e}")
+                print(f"Error: Error evaluando campaña {conf['campana']}: {e}")
                 intentos += 1
                 time.sleep(intervalo_consulta)
 
-        print(f"❌ Máximos intentos alcanzados para campaña {conf['campana']}. Enviando error.")
+        print(f"Error: Error Máximos intentos alcanzados para campaña {conf['campana']}. Enviando error.")
         env_error(conf, index)
 
 
@@ -233,7 +234,7 @@ if __name__ == '__main__':
             future.result()
 
     if campañas_a_ejecutar:
-        print("\n🚀 Ejecutando campañas que cumplieron...")
+        print("\n Error: Ejecutando campañas que cumplieron...")
 
         def main_multi_filtrado(campañas_filtradas):
             with ThreadPoolExecutor(max_workers=len(campañas_filtradas)) as executor:
@@ -254,10 +255,10 @@ if __name__ == '__main__':
 
         main_multi_filtrado(campañas_a_ejecutar)
     else:
-        print("\n❌ Ninguna campaña cumplió con el tiempo requerido tras los intentos.")
+        print("\n Error: Error Ninguna campaña cumplió con el tiempo requerido tras los intentos.")
 
     if campañas_fallidas:
-        print("\n🚨 Ejecutando envíos de error para campañas fallidas...")
+        print("\n Error: Error Ejecutando envíos de error para campañas fallidas...")
         with ThreadPoolExecutor(max_workers=len(campañas_fallidas)) as executor:
             futures = [executor.submit(env_error, conf, idx)
                     for idx, conf in enumerate(campañas_fallidas, start=1)]

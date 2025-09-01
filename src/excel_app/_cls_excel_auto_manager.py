@@ -95,7 +95,6 @@ class Process_Excel:
         self.ruta_txt = ruta_txt
         os.makedirs(self.ruta_img, exist_ok=True)
         os.makedirs(self.ruta_txt, exist_ok=True)
-        self.xpath_buscar_chats = '//div[@aria-placeholder="Search or start a new chat"]' 
         self.xpath_boton_adjun = '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div/div[1]/button'
         self.xpath_input_img = '//input[@accept="image/*,video/mp4,video/3gpp,video/quicktime"]'
         self.xpath_mensaje = '//div[@aria-placeholder="Add a caption"]'
@@ -207,7 +206,7 @@ class Process_Excel:
             except:
                 pass
             time.sleep(0.5)
-        print("⚠️ Excel no respondió dentro del tiempo esperado.")
+        print("Advertencia: Excel no respondió dentro del tiempo esperado.")
         return False
 
     def refresh_archivo_excel(self):
@@ -220,26 +219,26 @@ class Process_Excel:
             excel = win32com.client.Dispatch("Excel.Application")
             excel.DisplayAlerts = False
             excel.Visible = True
-            print(f"📖 Abriendo libro {self.archivo_excel}...")
+            print(f"Abriendo libro {self.archivo_excel}...")
             libro = excel.Workbooks.Open(self.archivo_excel)
             time.sleep(10)
             self.esperar_excel_listo(excel)
             
-            print("🔌 Actualizando conexiones...")
+            print("Actualizando conexiones...")
             libro.RefreshAll()
             excel.CalculateUntilAsyncQueriesDone()
-            print("✅ Actualización de datos completada")
+            print("Actualización de datos completada")
             
             time.sleep(3)
             
-            print("📊 Actualizando tablas dinámicas...")
+            print("Actualizando tablas dinámicas...")
             for hoja in libro.Sheets:
                 try:
                     for pt in hoja.PivotTables():
                         pt.RefreshTable()
                 except:
                     continue
-            print("✅ Tablas dinámicas actualizadas")
+            print("Tablas dinámicas actualizadas")
             
             time.sleep(3)
 
@@ -252,7 +251,7 @@ class Process_Excel:
 
 
     def exportar_imagenes_excel(self, excel, libro):
-        print("\n📸 Iniciando captura de imágenes...")
+        print("\n Iniciando captura de imágenes...")
 
         try:
             for captura_img in self.var_captura_img:
@@ -261,7 +260,7 @@ class Process_Excel:
 
                 while intentos < 3 and not exito:
                     try:
-                        print(f"🌀 Intento {intentos + 1} para hoja: {captura_img['hojas_captura_img']}")
+                        print(f"Intento {intentos + 1} para hoja: {captura_img['hojas_captura_img']}")
                         
                         excel.CalculateUntilAsyncQueriesDone()
                         hoja = libro.Worksheets(captura_img['hojas_captura_img'])
@@ -287,21 +286,21 @@ class Process_Excel:
                         if img:
                             img_path = os.path.join(self.ruta_img, f"{captura_img['hojas_captura_img']}.png")
                             img.save(img_path, 'PNG')
-                            print(f"✅ Imagen guardada en {img_path}")
+                            print(f"Imagen guardada en {img_path}")
                             exito = True  # Marca éxito y rompe el while
                         else:
-                            print(f"⚠️ No se pudo capturar imagen (grabclipboard vacía).")
+                            print(f"Error: Error No se pudo capturar imagen (grabclipboard vacía).")
 
                     except Exception as e:
-                        print(f"⚠️ Error en intento {intentos + 1} para {captura_img['hojas_captura_img']}: {str(e)}")
+                        print(f"Error: Error en intento {intentos + 1} para {captura_img['hojas_captura_img']}: {str(e)}")
 
                     intentos += 1
 
                 if not exito:
-                    print(f"❌ Fallaron los 3 intentos para capturar {captura_img['hojas_captura_img']}")
+                    print(f"Error: Error Fallaron los 3 intentos para capturar {captura_img['hojas_captura_img']}")
 
         except Exception as e:
-            print(f"⚠️ Error general en exportar_imagenes_excel: {str(e)}")
+            print(f"Error: Error general en exportar_imagenes_excel: {str(e)}")
 
 
                     
@@ -309,7 +308,7 @@ class Process_Excel:
         warnings.filterwarnings("ignore", category=UserWarning, message=".*extension is not supported.*")
 
         if not hasattr(self, 'var_captura_img') or not self.var_captura_img:
-            print("⚠️ No se han definido hojas para capturar texto")
+            print("Advertencia: No se han definido hojas para capturar texto")
             return
 
         for captura_txt in self.var_captura_img:
@@ -320,10 +319,10 @@ class Process_Excel:
                     win32clipboard.CloseClipboard()
                     print("Limpieza de portapapeles completa, copiando celdas")
                 except Exception as e:
-                    print(f"⚠️ Error al limpiar el portapapeles: {str(e)}")
+                    print(f"Error: Error al limpiar el portapapeles: {str(e)}")
 
                 if 'hojas_captura_img' not in captura_txt:
-                    print("⚠️ Falta especificar 'hojas_captura_img' en la configuración")
+                    print("Error: Falta especificar 'hojas_captura_img' en la configuración")
                     continue
 
                 hoja = libro.Worksheets(captura_txt['hojas_captura_img'])
@@ -344,9 +343,9 @@ class Process_Excel:
                     print(f"ℹ️ {captura_txt['hojas_captura_img']}: Celda {fila},{columna} está vacía")
 
             except Exception as e:
-                print(f"⚠️ Error procesando {captura_txt.get('hojas_captura_img', 'hoja desconocida')}: {str(e)}")
+                print(f"Error: Error procesando {captura_txt.get('hojas_captura_img', 'hoja desconocida')}: {str(e)}")
         
-        print("💾 Guardando...")
+        print("Guardando...")
         libro.Save()
         time.sleep(5)
         libro.Close(SaveChanges=False)
@@ -363,7 +362,6 @@ class Envio_Pdc_Wpp:
         self.ruta_img = processor.ruta_img
         self.ruta_txt = processor.ruta_txt
         self.var_captura_img = processor.var_captura_img
-        self.xpath_buscar_chats = processor.xpath_buscar_chats
         self.xpath_boton_adjun = processor.xpath_boton_adjun
         self.xpath_input_img = processor.xpath_input_img
         self.xpath_mensaje = processor.xpath_mensaje
@@ -377,21 +375,21 @@ class Envio_Pdc_Wpp:
             WebScraping_Chrome.WebScraping_Wait(driver, 150, self.xpath_wpp)
 
             for grupo in tqdm.tqdm(self.var_captura_img):
+                
                 try:
-                    WebScraping_Chrome.WebScraping_Wait(driver, 120, self.xpath_buscar_chats)
-                    WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_buscar_chats)
+
+                    WebScraping_Chrome.WebScraping_WaitCSS(driver, 20, 'div[contenteditable="true"][role="textbox"]')
                     
-                    time.sleep(1)
-                    
-                    WebScraping_Chrome.WebScraping_Cle(driver, self.xpath_buscar_chats)
-                    
-                    time.sleep(1)
-                    
-                    WebScraping_Chrome.WebScraping_Keys(driver, self.xpath_buscar_chats, grupo['nombre_grupo'])
-                    
+                    WebScraping_Chrome.WebScraping_ScrollIntoViewCSS(driver, 'div[contenteditable="true"][role="textbox"]')
+
+                    WebScraping_Chrome.WebScraping_ClickCSS(driver, 'div[contenteditable="true"][role="textbox"]')
+
+                    WebScraping_Chrome.WebScraping_SendKeysCSS(driver, 'div[contenteditable="true"][role="textbox"]', grupo['nombre_grupo'])
+                                        
                     time.sleep(1)
 
                     buscador_grupo = f'//span[@title="{grupo["nombre_grupo"]}"]'
+                
                     WebScraping_Chrome.WebScraping_Wait(driver, 120, buscador_grupo)
                     WebScraping_Chrome.WebScraping_Nav(driver, buscador_grupo)
 
@@ -399,8 +397,12 @@ class Envio_Pdc_Wpp:
 
                     imagen_path = os.path.join(self.ruta_img, f"{grupo['hojas_captura_img']}.png")
                     if os.path.exists(imagen_path):
-                        WebScraping_Chrome.WebScraping_Wait(driver, 120, self.xpath_boton_adjun)
-                        WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_boton_adjun)
+
+                        WebScraping_Chrome.WebScraping_WaitCSS(driver, 20, 'footer button[title="Attach"]')
+                        
+                        WebScraping_Chrome.WebScraping_ScrollIntoViewCSS(driver, 'footer button[title="Attach"]')
+
+                        WebScraping_Chrome.WebScraping_ClickCSS(driver, 'footer button[title="Attach"]')
 
                         time.sleep(1)
 
@@ -409,26 +411,29 @@ class Envio_Pdc_Wpp:
                         time.sleep(2)
 
                     else:
-                        print(f"⚠️ La imagen {imagen_path} no se encuentra.")
+                        print(f"Advertencia: La imagen {imagen_path} no se encuentra.")
                         
                     texto_path = os.path.join(self.ruta_txt, f"{grupo['hojas_captura_img']}.txt")
                     if os.path.exists(texto_path):                    
                         with open(texto_path, 'r', encoding='utf-8') as file:
                             texto_a_pegar = file.read()
 
-                            WebScraping_Chrome.WebScraping_Wait(driver, 120, self.xpath_mensaje)
-                            WebScraping_Chrome.WebScraping_Keys(driver, self.xpath_mensaje, texto_a_pegar)
+                            WebScraping_Chrome.WebScraping_WaitCSS( driver, 20, 'div[role="textbox"][contenteditable="true"][aria-autocomplete="list"][data-lexical-editor="true"]')
+
+                            WebScraping_Chrome.WebScraping_WriteCSS(
+                                driver, 
+                                'div[role="textbox"][contenteditable="true"][aria-autocomplete="list"][data-lexical-editor="true"]', texto_a_pegar)
 
                             WebScraping_Chrome.WebScraping_Wait(driver, 120, self.xpath_boton_enviar)
                             WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_boton_enviar)
 
                             time.sleep(20)
                     else:
-                        print(f"⚠️ El archivo de texto {texto_path} no se encuentra.")
+                        print(f"Advertencia: El archivo de texto {texto_path} no se encuentra.")
                 except Exception as e:
-                    print(f"⚠️ Error al enviar mensaje al grupo {grupo['nombre_grupo']}: {str(e)}")
+                    print(f"Error: Error al enviar mensaje al grupo {grupo['nombre_grupo']}: {str(e)}")
         except Exception as e:
-            print(f"❌ Error general en el bot: {str(e)}")
+            print(f"Error: Error general en el bot: {str(e)}")
 
 class EnvioErrorPdc:
 
@@ -443,7 +448,6 @@ class EnvioErrorPdc:
             'chromedriver.exe'
         )
         self.url = 'https://web.whatsapp.com/'
-        self.xpath_buscar_chats = '//div[@aria-placeholder="Search or start a new chat"]' 
         self.xpath_boton_enviar = '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div/div[4]/button'
         self.xpath_enviar_mensaje = '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div/div[4]/button'
         self.xpath_wpp = '//*[@id="app"]/div/div[3]/div/div[3]/header/header'
@@ -463,34 +467,37 @@ class EnvioErrorPdc:
                 WebScraping_Chrome.WebScraping_Acces(driver, self.url)
                 WebScraping_Chrome.WebScraping_Wait(driver, 500, self.xpath_wpp)
 
-                WebScraping_Chrome.WebScraping_Wait(driver, 120, self.xpath_buscar_chats)
-                WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_buscar_chats)      
+                WebScraping_Chrome.WebScraping_WaitCSS(driver, 20, 'div[contenteditable="true"][role="textbox"]')
+                WebScraping_Chrome.WebScraping_ScrollIntoViewCSS(driver, 'div[contenteditable="true"][role="textbox"]')
 
-                WebScraping_Chrome.WebScraping_Cle(driver, self.xpath_buscar_chats)
-                            
-                WebScraping_Chrome.WebScraping_Keys(driver, self.xpath_buscar_chats, self.grupo_alerta)
+                WebScraping_Chrome.WebScraping_ClickCSS(driver, 'div[contenteditable="true"][role="textbox"]')
+
+                WebScraping_Chrome.WebScraping_SendKeysCSS(driver, 'div[contenteditable="true"][role="textbox"]', self.grupo_alerta)
+
                 
                 time.sleep(1)
                 
                 buscador_grupo = f'//span[@title="{self.grupo_alerta}"]'
                 WebScraping_Chrome.WebScraping_Wait(driver, 120, buscador_grupo)
                 WebScraping_Chrome.WebScraping_Nav(driver, buscador_grupo)
+                                
+                WebScraping_Chrome.WebScraping_WaitCSS(driver, 20, "footer div[role='textbox'][contenteditable='true']")
 
-                
-                WebScraping_Chrome.WebScraping_Wait(driver, 150, self.xpath_escribir_msj)
-                WebScraping_Chrome.WebScraping_Cle(driver, self.xpath_escribir_msj)  
-                WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_escribir_msj)        
-                WebScraping_Chrome.WebScraping_Keys(driver, self.xpath_escribir_msj, self.mensaje_alerta)
+                WebScraping_Chrome.WebScraping_ScrollIntoViewCSS(driver, "footer div[role='textbox'][contenteditable='true']")
+
+                WebScraping_Chrome.WebScraping_ClickCSS(driver, "footer div[role='textbox'][contenteditable='true']")
+
+                WebScraping_Chrome.WebScraping_SendKeysCSS(driver, "footer div[role='textbox'][contenteditable='true']", self.mensaje_alerta)
                 
                 time.sleep(3)
                 
                 WebScraping_Chrome.WebScraping_Wait(driver, 150, self.xpath_enviar_mensaje)
                 WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_enviar_mensaje)
-                time.sleep(15)
+                time.sleep(30)
 
-                print(f"✅ Mensaje enviado correctamente al grupo {self.grupo_alerta}")
+                print(f"Mensaje enviado correctamente al grupo {self.grupo_alerta}")
             except Exception as e:
-                print(f"❌ Error al enviar mensaje al grupo {self.grupo_alerta}: {e}")
+                print(f"Error: Error al enviar mensaje al grupo {self.grupo_alerta}: {e}")
             finally:
                 if driver:
                     driver.quit()
