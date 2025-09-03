@@ -105,6 +105,7 @@ def leer_query(path):
 
 def main_multi():
 
+#    config_campanas = [config["config_pdc_axa_colpatria"]]
     config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"], config["config_pdc_axa_colpatria"]]
 
     print("🚀 Ejecutando VCDL en paralelo...")
@@ -168,6 +169,7 @@ def env_error(conf, index):
 excel_lock = Lock()
 if __name__ == '__main__':
 
+#    config_campanas = [config["config_pdc_axa_colpatria"]]
     config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"], config["config_pdc_axa_colpatria"]]
     
     campañas_a_ejecutar = []
@@ -175,8 +177,8 @@ if __name__ == '__main__':
     lock = Lock()
 
     intentos_max = 5
-    intervalo_consulta =300
-    intervalo_max = 120
+    intervalo_consulta = 300
+    intervalo_max = 80
 
     def evaluar_y_ejecutar(conf, index):
         intentos = 0
