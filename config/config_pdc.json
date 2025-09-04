@@ -266,30 +266,26 @@
     "campana": "Axa Colpatria",
 
     "var_captura_img": [
-      {
-        "hojas_captura_img": "IndicadoresXSponsor",
-        "rangos_captura_img": "A1:L15",
-        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
-      },
+       
       {
         "hojas_captura_img": "VentasXSponsor",
         "rangos_captura_img": "A1:I27",
-        "nombre_grupo": "Chubb - COS TMK"
+        "nombre_grupo": "Reporteria y WF Axa Cos"
       },
       {
         "hojas_captura_img": "Exceso_Auxiliares",
         "rangos_captura_img": "A1:L51",
-        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+        "nombre_grupo": "Reporteria y WF Axa Cos"
       },
       {
         "hojas_captura_img": "Detalle_X_Agente_Gen",
         "rangos_captura_img": "A1:O57",
-        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+        "nombre_grupo": "Reporteria y WF Axa Cos"
       },
       {
         "hojas_captura_img": "Ausentismo",
         "rangos_captura_img": "A1:P55",
-        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
+        "nombre_grupo": "Reporteria y WF Axa Cos"
       }
     ]
   }
