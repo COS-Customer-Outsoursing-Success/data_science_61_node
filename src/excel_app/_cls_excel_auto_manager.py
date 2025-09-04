@@ -398,11 +398,11 @@ class Envio_Pdc_Wpp:
                     imagen_path = os.path.join(self.ruta_img, f"{grupo['hojas_captura_img']}.png")
                     if os.path.exists(imagen_path):
 
-                        WebScraping_Chrome.WebScraping_WaitCSS(driver, 20, 'footer button[title="Attach"]')
+                        WebScraping_Chrome.WebScraping_WaitCSS(driver, 20, 'footer button[title="Adjuntar"], footer button[title="Attach"]')
                         
-                        WebScraping_Chrome.WebScraping_ScrollIntoViewCSS(driver, 'footer button[title="Attach"]')
+                        WebScraping_Chrome.WebScraping_ScrollIntoViewCSS(driver, 'footer button[title="Adjuntar"], footer button[title="Attach"]')
 
-                        WebScraping_Chrome.WebScraping_ClickCSS(driver, 'footer button[title="Attach"]')
+                        WebScraping_Chrome.WebScraping_ClickCSS(driver, 'footer button[title="Adjuntar"], footer button[title="Attach"]')
 
                         time.sleep(1)
 
