@@ -401,14 +401,15 @@ class Envio_Pdc_Wpp:
                         WebScraping_Chrome.WebScraping_WaitCSS(
                             driver, 
                             120, 
-                            'div[aria-label="Adjuntar"][role="button"], div[aria-label="Attach"][role="button"]'
+                            'button[title="Adjuntar"], button[title="Attach"], div[aria-label="Adjuntar"][role="button"], div[aria-label="Attach"][role="button"]'
                         )
 
                         WebScraping_Chrome.WebScraping_ClickCSS(
                             driver, 
-                            'div[aria-label="Adjuntar"][role="button"], div[aria-label="Attach"][role="button"]'
+                            'button[title="Adjuntar"], button[title="Attach"], div[aria-label="Adjuntar"][role="button"], div[aria-label="Attach"][role="button"]'
                         )
                         time.sleep(1)
+
 
 
                         WebScraping_Chrome.WebScraping_Wait(driver, 120, self.xpath_input_img)

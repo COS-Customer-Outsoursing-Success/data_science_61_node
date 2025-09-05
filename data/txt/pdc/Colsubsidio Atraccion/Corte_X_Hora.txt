@@ -1,1 +1,1 @@
-Punto de Control General Colsubsidio AtraccionGENERAL  *Corte 09:00*: *Llamadas Realizadas:* `27` / *Contactos Efectivos* `0`/ *Efectividad* `0%`/ *Promedio Agentes_ACD* `00:00:44
+Punto de Control General Colsubsidio AtraccionGENERAL  *Corte 10:00*: *Llamadas Realizadas:* `46` / *Contactos Efectivos* `0`/ *Efectividad* `0%`/ *Promedio Agentes_ACD* `00:00:51
