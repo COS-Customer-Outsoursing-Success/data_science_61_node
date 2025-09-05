@@ -372,43 +372,48 @@ class Envio_Pdc_Wpp:
         try:
             driver = WebScraping_Chrome.Webdriver_ChrPP_DP(self.profile_path, self.driver_path)
             WebScraping_Chrome.WebScraping_Acces(driver, self.url)
-            WebScraping_Chrome.WebScraping_Wait(driver, 150, self.xpath_wpp)
+            WebScraping_Chrome.WebScraping_Wait(driver, 300, self.xpath_wpp)
 
             for grupo in tqdm.tqdm(self.var_captura_img):
                 
                 try:
 
-                    WebScraping_Chrome.WebScraping_WaitCSS(driver, 20, 'div[contenteditable="true"][role="textbox"]')
+                    WebScraping_Chrome.WebScraping_WaitCSS(driver, 120, 'div[contenteditable="true"][role="textbox"]')
+
+                    WebScraping_Chrome.WebScraping_ClearCSS(driver, 'div[contenteditable="true"][role="textbox"]')
                     
-                    WebScraping_Chrome.WebScraping_ScrollIntoViewCSS(driver, 'div[contenteditable="true"][role="textbox"]')
-
                     WebScraping_Chrome.WebScraping_ClickCSS(driver, 'div[contenteditable="true"][role="textbox"]')
+                    time.sleep(1)
 
-                    WebScraping_Chrome.WebScraping_SendKeysCSS(driver, 'div[contenteditable="true"][role="textbox"]', grupo['nombre_grupo'])
-                                        
+                    WebScraping_Chrome.WebScraping_SendKeysCSS(driver, 'div[contenteditable="true"][role="textbox"]', grupo['nombre_grupo'])                    
                     time.sleep(1)
 
                     buscador_grupo = f'//span[@title="{grupo["nombre_grupo"]}"]'
                 
                     WebScraping_Chrome.WebScraping_Wait(driver, 120, buscador_grupo)
                     WebScraping_Chrome.WebScraping_Nav(driver, buscador_grupo)
-
                     time.sleep(1)
 
                     imagen_path = os.path.join(self.ruta_img, f"{grupo['hojas_captura_img']}.png")
+
                     if os.path.exists(imagen_path):
 
-                        WebScraping_Chrome.WebScraping_WaitCSS(driver, 20, 'footer button[title="Adjuntar"], footer button[title="Attach"]')
-                        
-                        WebScraping_Chrome.WebScraping_ScrollIntoViewCSS(driver, 'footer button[title="Adjuntar"], footer button[title="Attach"]')
+                        WebScraping_Chrome.WebScraping_WaitCSS(
+                            driver, 
+                            120, 
+                            'div[aria-label="Adjuntar"][role="button"], div[aria-label="Attach"][role="button"]'
+                        )
 
-                        WebScraping_Chrome.WebScraping_ClickCSS(driver, 'footer button[title="Adjuntar"], footer button[title="Attach"]')
-
+                        WebScraping_Chrome.WebScraping_ClickCSS(
+                            driver, 
+                            'div[aria-label="Adjuntar"][role="button"], div[aria-label="Attach"][role="button"]'
+                        )
                         time.sleep(1)
+
 
                         WebScraping_Chrome.WebScraping_Wait(driver, 120, self.xpath_input_img)
                         WebScraping_Chrome.WebScraping_Keys(driver, self.xpath_input_img, imagen_path)
-                        time.sleep(2)
+                        time.sleep(3)
 
                     else:
                         print(f"Advertencia: La imagen {imagen_path} no se encuentra.")
@@ -418,11 +423,10 @@ class Envio_Pdc_Wpp:
                         with open(texto_path, 'r', encoding='utf-8') as file:
                             texto_a_pegar = file.read()
 
-                            WebScraping_Chrome.WebScraping_WaitCSS( driver, 20, 'div[role="textbox"][contenteditable="true"][aria-autocomplete="list"][data-lexical-editor="true"]')
+                            WebScraping_Chrome.WebScraping_WaitCSS( driver, 120, 'div[role="textbox"][contenteditable="true"][aria-autocomplete="list"][data-lexical-editor="true"]')
 
-                            WebScraping_Chrome.WebScraping_WriteCSS(
-                                driver, 
-                                'div[role="textbox"][contenteditable="true"][aria-autocomplete="list"][data-lexical-editor="true"]', texto_a_pegar)
+                            WebScraping_Chrome.WebScraping_WriteCSS(driver, 'div[role="textbox"][contenteditable="true"][aria-autocomplete="list"][data-lexical-editor="true"]', texto_a_pegar)
+                            time.sleep(2)
 
                             WebScraping_Chrome.WebScraping_Wait(driver, 120, self.xpath_boton_enviar)
                             WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_boton_enviar)
@@ -467,7 +471,7 @@ class EnvioErrorPdc:
                 WebScraping_Chrome.WebScraping_Acces(driver, self.url)
                 WebScraping_Chrome.WebScraping_Wait(driver, 500, self.xpath_wpp)
 
-                WebScraping_Chrome.WebScraping_WaitCSS(driver, 20, 'div[contenteditable="true"][role="textbox"]')
+                WebScraping_Chrome.WebScraping_WaitCSS(driver, 120, 'div[contenteditable="true"][role="textbox"]')
                 WebScraping_Chrome.WebScraping_ScrollIntoViewCSS(driver, 'div[contenteditable="true"][role="textbox"]')
 
                 WebScraping_Chrome.WebScraping_ClickCSS(driver, 'div[contenteditable="true"][role="textbox"]')
@@ -481,7 +485,7 @@ class EnvioErrorPdc:
                 WebScraping_Chrome.WebScraping_Wait(driver, 120, buscador_grupo)
                 WebScraping_Chrome.WebScraping_Nav(driver, buscador_grupo)
                                 
-                WebScraping_Chrome.WebScraping_WaitCSS(driver, 20, "footer div[role='textbox'][contenteditable='true']")
+                WebScraping_Chrome.WebScraping_WaitCSS(driver, 120, "footer div[role='textbox'][contenteditable='true']")
 
                 WebScraping_Chrome.WebScraping_ScrollIntoViewCSS(driver, "footer div[role='textbox'][contenteditable='true']")
 

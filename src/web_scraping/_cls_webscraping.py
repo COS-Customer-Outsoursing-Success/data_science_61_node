@@ -105,6 +105,14 @@ class WebScraping_Chrome:
     # WebScraping_WaitCSS(driver, 10, 'input[formcontrolname="user"]')
 
     @staticmethod
+    def WebScraping_ClearCSS(driver, css_selector):
+        elemento = driver.find_element(By.CSS_SELECTOR, css_selector)
+        elemento.clear()
+    
+    # Uso:
+    # WebScraping_Clear_CSS(driver, 'button[type="submit"][color="primary"]')
+
+    @staticmethod
     def WebScraping_ClickCSS(driver, css_selector):
         elemento = driver.find_element(By.CSS_SELECTOR, css_selector)
         elemento.click()

@@ -59,6 +59,7 @@ def ejecutar_excel_por_campana(conf, index=0):
         'User Data',
         f'Default',
         f'perfil_selenium_{index}'
+#        f'perfil_selenium_4'
     )
     try:
         print(f"Iniciando Excel: {conf['campana']} con perfil {profile_path}")
