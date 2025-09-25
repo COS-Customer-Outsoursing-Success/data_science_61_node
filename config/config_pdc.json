@@ -269,17 +269,17 @@
        
       {
         "hojas_captura_img": "VentasXSponsor",
-        "rangos_captura_img": "A1:I27",
+        "rangos_captura_img": "A1:I32",
         "nombre_grupo": "Reporteria y WF Axa Cos"
       },
       {
         "hojas_captura_img": "Exceso_Auxiliares",
-        "rangos_captura_img": "A1:L51",
+        "rangos_captura_img": "A1:L48",
         "nombre_grupo": "Reporteria y WF Axa Cos"
       },
       {
         "hojas_captura_img": "Detalle_X_Agente_Gen",
-        "rangos_captura_img": "A1:O57",
+        "rangos_captura_img": "A1:O52",
         "nombre_grupo": "Reporteria y WF Axa Cos"
       },
       {

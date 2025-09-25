@@ -372,20 +372,31 @@ class Envio_Pdc_Wpp:
         try:
             driver = WebScraping_Chrome.Webdriver_ChrPP_DP(self.profile_path, self.driver_path)
             WebScraping_Chrome.WebScraping_Acces(driver, self.url)
-            WebScraping_Chrome.WebScraping_Wait(driver, 300, self.xpath_wpp)
+
+            search_box_selector_grupo = (
+            
+                    'div[role="textbox"][aria-placeholder="Buscar un chat o iniciar uno nuevo"], '
+                    'div[role="textbox"][aria-placeholder="Search or start a new chat"]'
+                    )
+            
+            search_box_selector_texto_img = (
+            
+                    'div[role="textbox"][aria-placeholder="Escribe un mensaje"], '
+                    'div[role="textbox"][aria-placeholder="Type a message"]'
+                    )
+                        
+            WebScraping_Chrome.WebScraping_WaitCSS(driver, 120, search_box_selector_grupo)            
 
             for grupo in tqdm.tqdm(self.var_captura_img):
                 
                 try:
 
-                    WebScraping_Chrome.WebScraping_WaitCSS(driver, 120, 'div[contenteditable="true"][role="textbox"]')
-
-                    WebScraping_Chrome.WebScraping_ClearCSS(driver, 'div[contenteditable="true"][role="textbox"]')
-                    
-                    WebScraping_Chrome.WebScraping_ClickCSS(driver, 'div[contenteditable="true"][role="textbox"]')
+                    WebScraping_Chrome.WebScraping_WaitCSS(driver, 120, search_box_selector_grupo)
+                    WebScraping_Chrome.WebScraping_ClearCSS(driver, search_box_selector_grupo)
+                    WebScraping_Chrome.WebScraping_ClickCSS(driver, search_box_selector_grupo)
                     time.sleep(1)
-
-                    WebScraping_Chrome.WebScraping_SendKeysCSS(driver, 'div[contenteditable="true"][role="textbox"]', grupo['nombre_grupo'])                    
+                    
+                    WebScraping_Chrome.WebScraping_SendKeysCSS(driver, search_box_selector_grupo, grupo['nombre_grupo'])
                     time.sleep(1)
 
                     buscador_grupo = f'//span[@title="{grupo["nombre_grupo"]}"]'
@@ -424,10 +435,11 @@ class Envio_Pdc_Wpp:
                         with open(texto_path, 'r', encoding='utf-8') as file:
                             texto_a_pegar = file.read()
 
-                            WebScraping_Chrome.WebScraping_WaitCSS( driver, 120, 'div[role="textbox"][contenteditable="true"][aria-autocomplete="list"][data-lexical-editor="true"]')
+                            WebScraping_Chrome.WebScraping_WaitCSS( driver, 120, search_box_selector_texto_img)
+                            time.sleep(1)
 
-                            WebScraping_Chrome.WebScraping_WriteCSS(driver, 'div[role="textbox"][contenteditable="true"][aria-autocomplete="list"][data-lexical-editor="true"]', texto_a_pegar)
-                            time.sleep(2)
+                            WebScraping_Chrome.WebScraping_SendKeysCSS(driver, search_box_selector_texto_img, texto_a_pegar)
+                            time.sleep(3)
 
                             WebScraping_Chrome.WebScraping_Wait(driver, 120, self.xpath_boton_enviar)
                             WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_boton_enviar)

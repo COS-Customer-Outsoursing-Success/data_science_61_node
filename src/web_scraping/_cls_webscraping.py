@@ -105,6 +105,22 @@ class WebScraping_Chrome:
     # WebScraping_WaitCSS(driver, 10, 'input[formcontrolname="user"]')
 
     @staticmethod
+    def WebScraping_WaitCssMulti(driver, timeout, selectors):
+        """
+        Intenta esperar un selector de la lista, retorna el primero que funcione.
+        """
+        last_exception = None
+        for selector in selectors:
+            try:
+                WebScraping_Chrome.WebScraping_WaitCSS(driver, timeout, selector)
+                return selector  # devuelvo el que funcionó
+            except Exception as e:
+                last_exception = e
+                continue
+        raise Exception(f"Ninguno de los selectores fue encontrado: {selectors}") from last_exception
+
+
+    @staticmethod
     def WebScraping_ClearCSS(driver, css_selector):
         elemento = driver.find_element(By.CSS_SELECTOR, css_selector)
         elemento.clear()

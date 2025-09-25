@@ -106,7 +106,7 @@ def leer_query(path):
 
 def main_multi():
 
-#    config_campanas = [config["config_pdc_chubb"]]
+#    config_campanas = [config["config_pdc_axa_colpatria"]]
     config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"], config["config_pdc_axa_colpatria"]]
 
     print("🚀 Ejecutando VCDL en paralelo...")
@@ -170,7 +170,7 @@ def env_error(conf, index):
 excel_lock = Lock()
 if __name__ == '__main__':
 
-#    config_campanas = [config["config_pdc_chubb"]]
+#    config_campanas = [config["config_pdc_axa_colpatria"]]
     config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"], config["config_pdc_axa_colpatria"]]
     
     campañas_a_ejecutar = []
@@ -179,7 +179,7 @@ if __name__ == '__main__':
 
     intentos_max = 5
     intervalo_consulta = 300
-    intervalo_max = 50
+    intervalo_max = 1000
 
     def evaluar_y_ejecutar(conf, index):
         intentos = 0
@@ -193,7 +193,6 @@ if __name__ == '__main__':
                 engine = MySQLConnector().get_connection(database='bbdd_config')
                 df = pd.read_sql(query_max, engine)
 
- 
                 df['hora_ultima_llamada'] = pd.to_datetime(df['hora_ultima_llamada'], errors='coerce')
                 df['hora_ultima_llamada'] = df['hora_ultima_llamada'].fillna(pd.to_datetime('00:00:00'))
 
