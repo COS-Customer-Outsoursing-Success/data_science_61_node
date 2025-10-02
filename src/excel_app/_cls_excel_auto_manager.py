@@ -98,7 +98,7 @@ class Process_Excel:
         self.xpath_boton_adjun = '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div/div[1]/button'
         self.xpath_input_img = '//input[@accept="image/*,video/mp4,video/3gpp,video/quicktime"]'
         self.xpath_mensaje = '//div[@aria-placeholder="Add a caption"]'
-        self.xpath_boton_enviar = '//*[@id="app"]/div/div[3]/div/div[2]/div[2]/span/div/div/div/div[2]/div/div[2]/div[2]'
+        self.xpath_boton_enviar = '//*[@id="app"]/div[1]/div/div[3]/div/div[2]/div[2]/div/span/div/div/div/div[2]/div/div[2]/div[2]/div/div'
         self.xpath_wpp = '//*[@id="app"]/div/div[3]/div/div[3]/header/header'
         self.schema = schema
         self.stored_procedures = stored_procedures or []
@@ -384,8 +384,14 @@ class Envio_Pdc_Wpp:
                     'div[role="textbox"][aria-placeholder="Escribe un mensaje"], '
                     'div[role="textbox"][aria-placeholder="Type a message"]'
                     )
-                        
-            WebScraping_Chrome.WebScraping_WaitCSS(driver, 120, search_box_selector_grupo)            
+            
+            send_button_selector_envio = (
+                'div[role="button"][aria-label="Send"], '
+                'div[role="button"][aria-label="Enviar"]'
+            )
+                    
+                                    
+            WebScraping_Chrome.WebScraping_WaitCSS(driver, 300, search_box_selector_grupo)            
 
             for grupo in tqdm.tqdm(self.var_captura_img):
                 
@@ -441,10 +447,10 @@ class Envio_Pdc_Wpp:
                             WebScraping_Chrome.WebScraping_SendKeysCSS(driver, search_box_selector_texto_img, texto_a_pegar)
                             time.sleep(3)
 
-                            WebScraping_Chrome.WebScraping_Wait(driver, 120, self.xpath_boton_enviar)
-                            WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_boton_enviar)
+                            WebScraping_Chrome.WebScraping_WaitCSS(driver, 120, send_button_selector_envio)
+                            WebScraping_Chrome.WebScraping_ClickCSS(driver, send_button_selector_envio)
 
-                            time.sleep(20)
+                            time.sleep(15)
                     else:
                         print(f"Advertencia: El archivo de texto {texto_path} no se encuentra.")
                 except Exception as e:
