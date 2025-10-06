@@ -25,7 +25,7 @@ echo Ejecutando script de Python...
 echo ========================================
 
 REM Ejecutar el script de Python
-python "C:\Users\Emerson.Aguilar\Documents\git_hub\PDC_data_science_61\src\_main_process_excel_pdc.py"
+python "C:\Users\Emerson.Aguilar\Documents\git_hub\PDC_data_science_61\src\_main_Emerson_process_excel_pdc.py"
 
 IF ERRORLEVEL 1 (
     echo ❌ Error al ejecutar el script.
