@@ -1,7 +1,9 @@
 {
 
   "config_pdc_chubb": {
+
     "schema": "bbdd_cos_bog_chubb",
+
     "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_chubb",
 
     "sql_file_name": "_sql_max_call_date_chubb.sql",
@@ -32,6 +34,7 @@
     ],
 
     "archivo_excel": "Z:\\WORKFORCE\\03. Mission\\Emerson Aguilar\\14. Chubb\\pdc_chubb_dts.xlsx",
+    
     "campana": "Chubb",
 
     "var_captura_img": [
@@ -64,7 +67,9 @@
   },
 
   "config_pdc_colsubsidio": {
+    
     "schema": "bbdd_cos_bog_colsubsidio_servicio_empresas",
+    
     "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_colsubsidio_servicio_empresas",
 
     "sql_file_name": "_sql_max_call_date_colsubsidio_empresas.sql",
@@ -76,7 +81,9 @@
     ],
 
     "http_vcdl": "http",
+    
     "pass_vcdl": "wfm1031120694",    
+    
     "server_vcdl": "172.66.7.170",
 
     "campanas_vcdl": [
@@ -85,6 +92,7 @@
     ],
 
     "archivo_excel": "Z:\\WORKFORCE\\03. Mission\\Emerson Aguilar\\14. Chubb\\pdc_colsubsidio_dts.xlsx",
+    
     "campana": "Colsubsidio",
 
     "var_captura_img": [
@@ -117,7 +125,9 @@
   },
 
   "config_pdc_wom_cobranza": {
+    
     "schema": "bbdd_cs_bog_wom_cobranza",
+    
     "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_wom_cobranza",
 
     "sql_file_name": "_sql_max_call_date_wom_cobranza.sql",
@@ -133,6 +143,7 @@
     ],
 
     "archivo_excel": "Z:\\WORKFORCE\\03. Mission\\Emerson Aguilar\\14. Chubb\\pdc_wom_cobranza_dts.xlsx",
+    
     "campana": "Wom Cobranza",
 
     "var_captura_img": [
@@ -177,6 +188,7 @@
   "config_pdc_colsubsidio_atraccion": {
 
     "schema": "bbdd_cos_bog_colsubsidio_atraccion",
+    
     "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_colsubsidio_atraccion",
   
     "sql_file_name": "_sql_max_call_date_colsubsidio_atraccion.sql",
@@ -221,6 +233,7 @@
   "config_pdc_axa_colpatria": {
 
     "schema": "bbdd_cos_bog_grupo_axa",
+    
     "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_axa",
   
     "sql_file_name": "_sql_max_call_date_axa.sql",
@@ -268,8 +281,8 @@
     "var_captura_img": [
        
       {
-        "hojas_captura_img": "VentasXSponsor",
-        "rangos_captura_img": "A1:I32",
+        "hojas_captura_img": "Ventas_Sponsor",
+        "rangos_captura_img": "A1:F14",
         "nombre_grupo": "Reporteria y WF Axa Cos"
       },
       {
