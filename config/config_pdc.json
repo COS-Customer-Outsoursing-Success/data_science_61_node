@@ -301,5 +301,111 @@
         "nombre_grupo": "Reporteria y WF Axa Cos"
       }
     ]
+  },
+
+    "config_pdc_carteras_bogotá": {
+
+    "schema": "bbdd_cs_bog_carteras_propias",
+
+    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_carteras_propias",
+
+    "sql_file_name": "_sql_max_call_date_carteras.sql",
+
+    "stored_procedures": [
+      
+    ],
+
+    "http_vcdl": "http", 
+    "pass_vcdl": "10142484690",    
+    "server_vcdl": "172.70.7.41",
+
+    "campanas_vcdl": [
+      "CABFALA"
+    ],
+
+    "archivo_excel": "Z:\\WORKFORCE\\02. Workforce\\WFM Ronald Barberi\\01_DATA_SCIENCE\\02_CARTERAS_PROPIAS\\01_CARTERAS_PROPIAS_BOGOTA\\02_BOT_PDC_2\\01_PDC_BOGOTA_v2.xlsx",
+    
+    "campana": "carteras_bogota",
+
+    "var_captura_img": [
+      {
+        "hojas_captura_img": "Detalle_X_Agente",
+        "rangos_captura_img": "A1:O52",
+        "nombre_grupo": "Carteras propias Bog"
+      },
+      {
+        "hojas_captura_img": "Marcaciones",
+        "rangos_captura_img": "A1:O25",
+        "nombre_grupo": "Carteras propias Bog"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares",
+        "rangos_captura_img": "A1:l45",
+        "nombre_grupo": "Carteras propias Bog"
+      },
+      {
+        "hojas_captura_img": "Detalle_Hora_Hora",
+        "rangos_captura_img": "A1:L24",
+        "nombre_grupo": "Carteras propias Bog"
+      },
+      {
+        "hojas_captura_img": "Comparativo_Reg",
+        "rangos_captura_img": "A1:N35",
+        "nombre_grupo": "Carteras propias Bog"
+      }
+    ]
+  },
+
+    "config_pdc_carteras_medellin": {
+
+    "schema": "bbdd_cs_bog_carteras_propias",
+
+    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_carteras_propias",
+
+    "sql_file_name": "_sql_max_call_date_carteras.sql",
+
+    "stored_procedures": [
+      
+    ],
+
+    "http_vcdl": "http", 
+    "pass_vcdl": "10142484690",    
+    "server_vcdl": "172.80.7.217",
+
+    "campanas_vcdl": [
+      "CARTFALA"
+    ],
+
+    "archivo_excel": "Z:\\WORKFORCE\\02. Workforce\\WFM Ronald Barberi\\01_DATA_SCIENCE\\02_CARTERAS_PROPIAS\\02_CARTERAS_PROPIAS_MEDELLIN\\02_BOT_PDC\\01_PDC_MEDELLIN_v2.xlsx",
+    
+    "campana": "carteras_medellin",
+
+    "var_captura_img": [
+      {
+        "hojas_captura_img": "Detalle_X_Agente",
+        "rangos_captura_img": "A1:O45",
+        "nombre_grupo": "Carteras propias Medellin"
+      },
+      {
+        "hojas_captura_img": "Marcaciones",
+        "rangos_captura_img": "A1:O25",
+        "nombre_grupo": "Carteras propias Medellin"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares",
+        "rangos_captura_img": "A1:l37",
+        "nombre_grupo": "Carteras propias Medellin"
+      },
+      {
+        "hojas_captura_img": "Detalle_Hora_Hora",
+        "rangos_captura_img": "A1:L24",
+        "nombre_grupo": "Carteras propias Medellin"
+      },
+      {
+        "hojas_captura_img": "Comparativo_Reg",
+        "rangos_captura_img": "A1:N35",
+        "nombre_grupo": "Carteras propias Medellin"
+      }
+    ]
   }
 }

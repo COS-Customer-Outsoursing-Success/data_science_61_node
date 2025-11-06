@@ -23,12 +23,16 @@ class WebScraping_Chrome:
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--no-sandbox")
+        options.add_argument("--ignore-certificate-errors")
+        options.add_argument("--ignore-ssl-errors")
+        options.add_argument("--allow-insecure-localhost")
         prefs = {
             "download.prompt_for_download": False,
             "download.directory_upgrade": True,
             "safebrowsing.enabled": True
         }
         options.add_experimental_option("prefs", prefs)
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
         service = Service(executable_path=driver_path)
         driver = webdriver.Chrome(service=service, options=options)
         driver.maximize_window()
@@ -43,6 +47,9 @@ class WebScraping_Chrome:
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--no-sandbox")
+        options.add_argument("--ignore-certificate-errors")
+        options.add_argument("--ignore-ssl-errors")
+        options.add_argument("--allow-insecure-localhost")
         prefs = {
             "download.default_directory": download_path,
             "download.prompt_for_download": False,
@@ -50,6 +57,7 @@ class WebScraping_Chrome:
             "safebrowsing.enabled": True
         }
         options.add_experimental_option("prefs", prefs)
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
         service = Service(executable_path=driver_path)
         driver = webdriver.Chrome(service=service, options=options)
         driver.maximize_window()
