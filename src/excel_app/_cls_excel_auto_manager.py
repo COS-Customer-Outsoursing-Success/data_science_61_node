@@ -415,16 +415,11 @@ class Envio_Pdc_Wpp:
 
                     if os.path.exists(imagen_path):
 
-                        WebScraping_Chrome.WebScraping_WaitCSS(
-                            driver, 
-                            120, 
-                            'button[title="Adjuntar"], button[title="Attach"], div[aria-label="Adjuntar"][role="button"], div[aria-label="Attach"][role="button"]'
+                        WebScraping_Chrome.WebScraping_Wait( driver, 120, '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div/div[1]/div/span/button'
+
                         )
 
-                        WebScraping_Chrome.WebScraping_ClickCSS(
-                            driver, 
-                            'button[title="Adjuntar"], button[title="Attach"], div[aria-label="Adjuntar"][role="button"], div[aria-label="Attach"][role="button"]'
-                        )
+                        WebScraping_Chrome.WebScraping_Nav(driver, '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div/div[1]/div/span/button'                          )
                         time.sleep(1)
 
 
