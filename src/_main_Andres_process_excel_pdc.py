@@ -31,11 +31,14 @@ def ejecutar_vcdl_por_campana(conf):
 
     try:
         print(f"📥 Iniciando VCDL: {conf['campana']}")
+        
+        user_vcdl = '10142484690' if 'CARTFALA' in conf.get('campanas_vcdl', []) else '1014248469'
+        
         processor_detalle_ag = DetalleAgenteVcdl(
             schema=conf["schema"], 
             table='tb_detalle_agente_daily_new_dts',
             http_vcdl = conf['http_vcdl'],
-            user_vcdl='1014248469',
+            user_vcdl=user_vcdl, 
             pass_vcdl=conf['pass_vcdl'],
             server_vcdl=conf["server_vcdl"],
             campanas_vcdl=conf["campanas_vcdl"],

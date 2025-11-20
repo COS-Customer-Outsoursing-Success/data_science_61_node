@@ -335,7 +335,7 @@
       },
       {
         "hojas_captura_img": "Marcaciones",
-        "rangos_captura_img": "A1:O25",
+        "rangos_captura_img": "A1:P35",
         "nombre_grupo": "Carteras propias Bog"
       },
       {
@@ -369,8 +369,8 @@
     ],
 
     "http_vcdl": "http", 
-    "pass_vcdl": "10142484690",    
-    "server_vcdl": "172.80.7.217",
+    "pass_vcdl": "101424846900",    
+    "server_vcdl": "soulphone-fourteen.groupcos.com.co",
 
     "campanas_vcdl": [
       "CARTFALA"
@@ -388,7 +388,7 @@
       },
       {
         "hojas_captura_img": "Marcaciones",
-        "rangos_captura_img": "A1:O25",
+        "rangos_captura_img": "A1:p35",
         "nombre_grupo": "Carteras propias Medellin"
       },
       {
