@@ -3,6 +3,8 @@ Created By Emerson Aguilar Cruz
 """""
 import win32com.client
 import win32clipboard
+import win32gui
+import win32con
 import warnings
 import time
 import psutil
@@ -19,6 +21,10 @@ import threading
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from conexiones_db._cls_sqlalchemy import MySQLConnector
+from selenium.webdriver.common.by import By
+import os
+import time
+import tqdm
 
 class EjecucionStoredProcedure:
 
@@ -95,8 +101,8 @@ class Process_Excel:
         self.ruta_txt = ruta_txt
         os.makedirs(self.ruta_img, exist_ok=True)
         os.makedirs(self.ruta_txt, exist_ok=True)
-        self.xpath_boton_adjun = '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div/div[1]/button'
-        self.xpath_input_img = '//input[@accept="image/*,video/mp4,video/3gpp,video/quicktime"]'
+        self.xpath_boton_adjun = '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div/div[1]/button' 
+        self.xpath_input_img = ('//input[@type="file" and contains(@accept,"image") ''and contains(@accept,"video")]')
         self.xpath_mensaje = '//div[@aria-placeholder="Add a caption"]'
         self.xpath_boton_enviar = '//*[@id="app"]/div[1]/div/div[3]/div/div[2]/div[2]/div/span/div/div/div/div[2]/div/div[2]/div[2]/div/div'
         self.xpath_wpp = '//*[@id="app"]/div/div[3]/div/div[3]/header/header'
@@ -218,7 +224,8 @@ class Process_Excel:
         try:
             excel = win32com.client.Dispatch("Excel.Application")
             excel.DisplayAlerts = False
-            excel.Visible = True
+            excel.Visible = False
+            excel.ScreenUpdating = False
             print(f"Abriendo libro {self.archivo_excel}...")
             libro = excel.Workbooks.Open(self.archivo_excel)
             time.sleep(10)
@@ -252,6 +259,8 @@ class Process_Excel:
 
     def exportar_imagenes_excel(self, excel, libro):
         print("\n Iniciando captura de imágenes...")
+        excel.ScreenUpdating = True
+        time.sleep(2)
 
         try:
             for captura_img in self.var_captura_img:
@@ -284,10 +293,46 @@ class Process_Excel:
                             time.sleep(3)
 
                         if img:
-                            img_path = os.path.join(self.ruta_img, f"{captura_img['hojas_captura_img']}.png")
-                            img.save(img_path, 'PNG')
-                            print(f"Imagen guardada en {img_path}")
-                            exito = True  # Marca éxito y rompe el while
+                            from PIL import Image
+
+                            img = img.convert("RGB")
+
+                            bg = Image.new("RGB", img.size, (255, 255, 255))
+                            bg.paste(img)
+                            img = bg
+
+                            min_width = 1200
+                            min_height = 700
+
+                            if img.width < min_width or img.height < min_height:
+                                scale_w = min_width / img.width
+                                scale_h = min_height / img.height
+                                scale = max(scale_w, scale_h)
+
+                                img = img.resize(
+                                    (int(img.width * scale), int(img.height * scale)),
+                                    Image.Resampling.LANCZOS
+                                )
+
+                            img_path = os.path.join(
+                                self.ruta_img,
+                                f"{captura_img['hojas_captura_img']}.jpg"
+                            )
+
+                            img.save(
+                                img_path,
+                                "JPEG",
+                                quality=88,
+                                subsampling=2,
+                                dpi=(96, 96), 
+                                optimize=True
+                            )
+
+                            peso_kb = round(os.path.getsize(img_path) / 1024, 2)
+                            print(f"Imagen lista para WhatsApp: {img_path} | {img.size} | {peso_kb} KB")
+
+                            exito = True
+
                         else:
                             print(f"Error: Error No se pudo capturar imagen (grabclipboard vacía).")
 
@@ -370,88 +415,259 @@ class Envio_Pdc_Wpp:
 
     def env_pdc_bot(self):
         try:
-            driver = WebScraping_Chrome.Webdriver_ChrPP_DP(self.profile_path, self.driver_path)
+            driver = WebScraping_Chrome.Webdriver_ChrPP_DP(
+                self.profile_path,
+                self.driver_path
+            )
             WebScraping_Chrome.WebScraping_Acces(driver, self.url)
-
-            search_box_selector_grupo = (
-            
-                    'div[role="textbox"][aria-placeholder="Buscar un chat o iniciar uno nuevo"], '
-                    'div[role="textbox"][aria-placeholder="Search or start a new chat"]'
-                    )
-            
+    
             search_box_selector_texto_img = (
-            
-                    'div[role="textbox"][aria-placeholder="Escribe un mensaje"], '
-                    'div[role="textbox"][aria-placeholder="Type a message"]'
-                    )
-            
+                'div[role="textbox"][aria-placeholder="Escribe un mensaje"], '
+                'div[role="textbox"][aria-placeholder="Type a message"], '
+                'div[role="textbox"][aria-placeholder="Message"], '
+                'div[role="textbox"][aria-placeholder="Mensaje"], '
+                'p[role="textbox"][aria-placeholder="Escribe un mensaje"], '
+                'p[role="textbox"][aria-placeholder="Type a message"], '
+                'footer div[role="textbox"], '
+                'footer p[role="textbox"]'
+            )
+
             send_button_selector_envio = (
                 'div[role="button"][aria-label="Send"], '
                 'div[role="button"][aria-label="Enviar"]'
             )
-                    
-                                    
-            WebScraping_Chrome.WebScraping_WaitCSS(driver, 300, search_box_selector_grupo)            
 
+            print("Esperando que cargue WhatsApp Web...")
+            WebScraping_Chrome.WebScraping_WaitCSS(driver, 300, '#app, #startup')
+            print("WhatsApp cargado. Esperando que el UI se renderice completamente...")
+            WebScraping_Chrome.WebScraping_WaitCSS(driver, 60, 'input[placeholder]')
+            print("Detectando selector del buscador...")
+
+            info_buscador = driver.execute_script("""
+                var candidatos = [
+                    'div[role="textbox"][aria-placeholder]',
+                    'p[role="textbox"][aria-placeholder]',
+                    'input[placeholder]',
+                    'div[contenteditable="true"]',
+                    'p[contenteditable="true"]'
+                ];
+                for (var i = 0; i < candidatos.length; i++) {
+                    var els = document.querySelectorAll(candidatos[i]);
+                    for (var j = 0; j < els.length; j++) {
+                        var ph = (els[j].getAttribute('aria-placeholder') || els[j].getAttribute('placeholder') || '').toLowerCase();
+                        if (ph.includes('buscar') || ph.includes('search')) {
+                            return {selector: candidatos[i], placeholder: ph, tag: els[j].tagName};
+                        }
+                    }
+                }
+                return null;
+            """)
+
+            if info_buscador:
+                search_box_selector_grupo = info_buscador['selector']
+                print(f"Buscador detectado: tag={info_buscador['tag']} selector={search_box_selector_grupo} placeholder='{info_buscador['placeholder']}'")
+            else:
+                search_box_selector_grupo = (
+                    'div[role="textbox"][aria-placeholder="Buscar un chat o iniciar uno nuevo"], '
+                    'div[role="textbox"][aria-placeholder="Search or start a new chat"], '
+                    'div[role="textbox"][aria-placeholder="Buscar"], '
+                    'div[role="textbox"][aria-placeholder="Search"], '
+                    'p[role="textbox"][aria-placeholder="Buscar un chat o iniciar uno nuevo"], '
+                    'p[role="textbox"][aria-placeholder="Search or start a new chat"], '
+                    'p[role="textbox"][aria-placeholder="Buscar"], '
+                    'p[role="textbox"][aria-placeholder="Search"]'
+                )
+                print("Buscador no detectado via JS, usando fallback múltiple.")
+
+            print("Buscador de grupos listo. Iniciando envíos...")
+    
             for grupo in tqdm.tqdm(self.var_captura_img):
-                
+            
                 try:
-
-                    WebScraping_Chrome.WebScraping_WaitCSS(driver, 120, search_box_selector_grupo)
+                    # -------------------- BUSCAR GRUPO --------------------
+                    print(f"\n[GRUPO] Buscando: {grupo['nombre_grupo']}")
                     WebScraping_Chrome.WebScraping_ClearCSS(driver, search_box_selector_grupo)
                     WebScraping_Chrome.WebScraping_ClickCSS(driver, search_box_selector_grupo)
-                    time.sleep(1)
-                    
-                    WebScraping_Chrome.WebScraping_SendKeysCSS(driver, search_box_selector_grupo, grupo['nombre_grupo'])
+                    time.sleep(0.3)
+
+                    WebScraping_Chrome.WebScraping_SendKeysCSS(
+                        driver,
+                        search_box_selector_grupo,
+                        grupo['nombre_grupo']
+                    )
+                    print(f"[GRUPO] Texto enviado al buscador, esperando span...")
                     time.sleep(1)
 
                     buscador_grupo = f'//span[@title="{grupo["nombre_grupo"]}"]'
-                
-                    WebScraping_Chrome.WebScraping_Wait(driver, 120, buscador_grupo)
+                    WebScraping_Chrome.WebScraping_Wait(driver, 60, buscador_grupo)
                     WebScraping_Chrome.WebScraping_Nav(driver, buscador_grupo)
+                    print(f"[GRUPO] Click en grupo realizado.")
                     time.sleep(1)
-
-                    imagen_path = os.path.join(self.ruta_img, f"{grupo['hojas_captura_img']}.png")
-
+    
+                    # -------------------- ADJUNTAR IMAGEN --------------------
+                    imagen_path = os.path.join(
+                        self.ruta_img,
+                        f"{grupo['hojas_captura_img']}.jpg"
+                    )
+    
+                    # Debug: Verificar tamaño de imagen
                     if os.path.exists(imagen_path):
+                        from PIL import Image
+                        img_info = Image.open(imagen_path)
+                        size_kb = os.path.getsize(imagen_path) / 1024
+                        print(f"📸 Imagen: {img_info.size}, {size_kb:.1f}KB")
+                        
+                        # WhatsApp considera sticker si es muy pequeña o cuadrada
+                        if img_info.width < 500 or img_info.height < 500:
+                            print("⚠️ ADVERTENCIA: Imagen muy pequeña, puede enviarse como sticker")
+                        if abs(img_info.width - img_info.height) < 100:
+                            print("⚠️ ADVERTENCIA: Imagen casi cuadrada, puede enviarse como sticker")
+    
+                    if os.path.exists(imagen_path):
+                        try:
+                            # 1️⃣ Click en el clip (adjuntar) para abrir el menú de adjuntos
+                            clip_xpath = '//*[@id="main"]/footer//span/button'
+                            WebScraping_Chrome.WebScraping_Wait(driver, 15, clip_xpath)
+                            WebScraping_Chrome.WebScraping_Nav(driver, clip_xpath)
+                            time.sleep(0.8)
 
-                        WebScraping_Chrome.WebScraping_Wait( driver, 120, '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div/div[1]/div/span/button'
+                            # 2️⃣ Hilo que OCULTA el diálogo del OS sin cerrarlo (SW_HIDE)
+                            # WM_CLOSE = "Cancelar" → WhatsApp resetea estado → sticker
+                            # SW_HIDE = invisible pero abierto → WhatsApp conserva estado de foto
+                            def _ocultar_dialogo_os(timeout=5):
+                                titulos = ["Abrir", "Open"]
+                                deadline = time.time() + timeout
+                                while time.time() < deadline:
+                                    for titulo in titulos:
+                                        hwnd = win32gui.FindWindow(None, titulo)
+                                        if hwnd:
+                                            win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
+                                            return
+                                    time.sleep(0.01)
 
+                            # 3️⃣ Click en "Fotos y videos" — diálogo se oculta en ~10ms
+                            foto_button_selectors = [
+                                '//li[@data-tab="1"]',
+                                '//button[@aria-label="Photos & videos"]',
+                                '//button[@aria-label="Fotos y videos"]',
+                                '//span[contains(text(),"Fotos y videos")]/..',
+                                '//span[contains(text(),"Photos & videos")]/..',
+                            ]
+                            for selector in foto_button_selectors:
+                                try:
+                                    foto_btn = driver.find_element(By.XPATH, selector)
+                                    t_dialogo = threading.Thread(target=_ocultar_dialogo_os, args=(5,), daemon=True)
+                                    t_dialogo.start()
+                                    driver.execute_script("arguments[0].click();", foto_btn)
+                                    t_dialogo.join(timeout=6)
+                                    print("✅ Click en botón 'Fotos y videos' (diálogo ocultado)")
+                                    time.sleep(0.3)
+                                    break
+                                except Exception:
+                                    continue
+
+                            # 4️⃣ Enviar el archivo via send_keys — WhatsApp tiene estado de foto activo
+                            inputs = driver.find_elements(By.XPATH, '//input[@type="file"]')
+                            attached = False
+
+                            for inp in inputs:
+                                try:
+                                    accept = inp.get_attribute('accept') or ''
+                                    if 'video/mp4' in accept and 'image/*' in accept:
+                                        driver.execute_script(
+                                            "arguments[0].style.display='block';"
+                                            "arguments[0].style.visibility='visible';"
+                                            "arguments[0].style.position='absolute';",
+                                            inp
+                                        )
+                                        time.sleep(0.3)
+                                        inp.send_keys(imagen_path)
+                                        attached = True
+                                        print(f"✅ Imagen enviada al input de FOTOS (accept='{accept[:50]}...')")
+                                        break
+                                except Exception:
+                                    continue
+
+                            # Fallback: input genérico de imágenes
+                            if not attached:
+                                for inp in inputs:
+                                    try:
+                                        accept = inp.get_attribute('accept') or ''
+                                        if 'image/*' in accept and 'webp' not in accept:
+                                            driver.execute_script(
+                                                "arguments[0].style.display='block';"
+                                                "arguments[0].style.visibility='visible';",
+                                                inp
+                                            )
+                                            inp.send_keys(imagen_path)
+                                            attached = True
+                                            print(f"✅ Imagen enviada (fallback - accept='{accept}')")
+                                            break
+                                    except Exception:
+                                        continue
+
+                            if not attached:
+                                print("❌ No se encontró input válido para adjuntar imagen")
+
+                            # 5️⃣ Cerrar el diálogo oculto DESPUÉS de que send_keys ya procesó el archivo
+                            for titulo in ["Abrir", "Open"]:
+                                hwnd = win32gui.FindWindow(None, titulo)
+                                if hwnd:
+                                    win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
+                                    break
+
+                            time.sleep(2)
+
+                        except Exception as e:
+                            print(f"❌ Error general al adjuntar imagen: {e}")
+    
+                    else:
+                        print(f"❌ Imagen no encontrada: {imagen_path}")
+    
+                    # -------------------- TEXTO --------------------
+                    texto_path = os.path.join(
+                        self.ruta_txt,
+                        f"{grupo['hojas_captura_img']}.txt"
+                    )
+    
+                    if os.path.exists(texto_path):
+                    
+                        with open(texto_path, 'r', encoding='utf-8') as f:
+                            texto = f.read()
+    
+                        WebScraping_Chrome.WebScraping_WaitCSS(
+                            driver,
+                            60,
+                            search_box_selector_texto_img
                         )
-
-                        WebScraping_Chrome.WebScraping_Nav(driver, '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div/div[1]/div/span/button'                          )
+    
+                        WebScraping_Chrome.WebScraping_SendKeysCSS(
+                            driver,
+                            search_box_selector_texto_img,
+                            texto
+                        )
                         time.sleep(1)
-
-
-
-                        WebScraping_Chrome.WebScraping_Wait(driver, 120, self.xpath_input_img)
-                        WebScraping_Chrome.WebScraping_Keys(driver, self.xpath_input_img, imagen_path)
+    
+                        WebScraping_Chrome.WebScraping_WaitCSS(
+                            driver,
+                            30,
+                            send_button_selector_envio
+                        )
+                        WebScraping_Chrome.WebScraping_ClickCSS(
+                            driver,
+                            send_button_selector_envio
+                        )
+    
                         time.sleep(3)
 
                     else:
-                        print(f"Advertencia: La imagen {imagen_path} no se encuentra.")
-                        
-                    texto_path = os.path.join(self.ruta_txt, f"{grupo['hojas_captura_img']}.txt")
-                    if os.path.exists(texto_path):                    
-                        with open(texto_path, 'r', encoding='utf-8') as file:
-                            texto_a_pegar = file.read()
-
-                            WebScraping_Chrome.WebScraping_WaitCSS( driver, 120, search_box_selector_texto_img)
-                            time.sleep(1)
-
-                            WebScraping_Chrome.WebScraping_SendKeysCSS(driver, search_box_selector_texto_img, texto_a_pegar)
-                            time.sleep(3)
-
-                            WebScraping_Chrome.WebScraping_WaitCSS(driver, 120, send_button_selector_envio)
-                            WebScraping_Chrome.WebScraping_ClickCSS(driver, send_button_selector_envio)
-
-                            time.sleep(15)
-                    else:
-                        print(f"Advertencia: El archivo de texto {texto_path} no se encuentra.")
+                        print(f"❌ Texto no encontrado: {texto_path}")
+    
                 except Exception as e:
-                    print(f"Error: Error al enviar mensaje al grupo {grupo['nombre_grupo']}: {str(e)}")
+                    print(f"❌ Error grupo {grupo['nombre_grupo']}: {e}")
+    
         except Exception as e:
-            print(f"Error: Error general en el bot: {str(e)}")
+            print(f"❌ Error general del bot: {e}")
 
 class EnvioErrorPdc:
 

@@ -1,0 +1,238 @@
+{
+
+  "config_pdc_blaster_laika": {
+
+    "schema": "bbdd_cos_bog_laika",
+
+    "tabla_alerta": "",
+
+    "sql_file_name": "_sql_max_call_date_blaster_laika.sql",
+
+    "stored_procedures": [],
+
+    "http_vcdl": "http", 
+    "user_vcdl": "",
+    "pass_vcdl": "",
+    "server_vcdl": "",
+
+    "campanas_vcdl": [""],
+
+    "archivo_excel": "Z:\\WORKFORCE\\02. Workforce\\WFM_CAMPANAS\\Laika Sac\\07_BLASTER_LAIKA Cumpleaños.xlsx",
+    
+    "campana": "Blaster_Laika",
+
+    "var_captura_img": [
+      {
+        "hojas_captura_img": "REPORT",
+        "rangos_captura_img": "A1:S22",
+        "nombre_grupo": "Notas"
+      },
+      {
+        "hojas_captura_img": "REPORT_2",
+        "rangos_captura_img": "S1:AF43",
+        "nombre_grupo": "Notas"
+      }
+    ]
+  },
+
+  "config_pdc_laika_sac": {
+    
+    "schema": "bbdd_cos_bog_laika",
+    
+    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_inb_laika",
+
+    "sql_file_name": "_sql_max_call_date_laika_sac.sql",
+    
+    "stored_procedures": [ ],
+
+    "http_vcdl": "http",
+    
+    "pass_vcdl": "",    
+    
+    "server_vcdl": "",
+
+    "campanas_vcdl": [ ],
+
+    "archivo_excel": "Z:\\WORKFORCE\\02. Workforce\\WFM_CAMPANAS\\Laika Sac\\pdc_laika_sac_in_dts.xlsm",
+    
+    "campana": "Laika_Sac",
+
+    "var_captura_img": [
+      {
+        "hojas_captura_img": "PDC_GENERAL",
+        "rangos_captura_img": "A1:P47",
+        "nombre_grupo": "Notas"
+      },
+      {
+        "hojas_captura_img": "PDC_COLOMBIA",
+        "rangos_captura_img": "A1:P47",
+        "nombre_grupo": "Notas"
+      },
+      {
+        "hojas_captura_img": "PDC_CHILE",
+        "rangos_captura_img": "A1:P47",
+        "nombre_grupo": "Notas"
+      }
+    ]
+  },
+
+  "config_kpis_laika": {
+
+    "schema": "bbdd_cos_bog_laika",
+
+    "tabla_alerta": "",
+
+    "sql_file_name": "_sql_max_detalle_agente_laika.sql",
+
+    "stored_procedures": [],
+
+    "http_vcdl": "http", 
+    "user_vcdl": "1014224917",
+    "pass_vcdl": "10142249170",
+    "server_vcdl": "10.57.251.70",
+
+    "campanas_vcdl": ["OUT_BASE", "COL_PER1", "COL_PER2", "COL_PER3", "COL_PER4", "LAIKAUNI"],
+
+    "archivo_excel": "Z:\\WORKFORCE\\02. Workforce\\WFM_CAMPANAS\\Laika Sac\\kpis_laika_ventas_sac_dts.xlsx",
+    
+    "campana": "Kpis_Laika",
+
+    "var_captura_img": [
+      {
+        "hojas_captura_img": "Detalle_X_Agente_Alison",
+        "rangos_captura_img": "A1:O45",
+        "nombre_grupo": "Notas"
+      },
+      {
+        "hojas_captura_img": "Detalle_X_Agente_Johan",
+        "rangos_captura_img": "A1:O45",
+        "nombre_grupo": "Notas"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares_Alison",
+        "rangos_captura_img": "A1:P45",
+        "nombre_grupo": "Notas"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares_Johan",
+        "rangos_captura_img": "A1:P45",
+        "nombre_grupo": "Notas"
+      }
+    ]
+  },
+
+  "config_abs_prioritarias": {
+
+    "schema": "bbdd_cos_bog_claro_recuperacion",
+
+    "tabla_alerta": "",
+
+    "sql_file_name": "_sql_max_ini_log_prioritarias.sql",
+
+    "stored_procedures": [],
+
+    "http_vcdl": "https", 
+    "user_vcdl": "",
+    "pass_vcdl": "",
+    "server_vcdl": "",
+
+    "campanas_vcdl": [""],
+
+    "archivo_excel": "Z:\\WORKFORCE\\02. Workforce\\WFM_CAMPANAS\\Claro - Prioritarias\\pdc\\abs_prioritarias_dts.xlsx",
+    
+    "campana": "Abs_Prioritarias",
+
+    "var_captura_img": [
+      {
+        "hojas_captura_img": "Ausentismo_Retardo_Recu",
+        "rangos_captura_img": "A1:Q50",
+        "nombre_grupo": "Staff recuperación"
+      },
+      {
+        "hojas_captura_img": "Ausentismo_Retardo_3ani",
+        "rangos_captura_img": "A1:Q50",
+        "nombre_grupo": "Staff Reversion Movil"
+      },
+      {
+        "hojas_captura_img": "Ausentismo_Retardo_3ani",
+        "rangos_captura_img": "A1:Q50",
+        "nombre_grupo": "Staff tercer anillo"
+      }
+    ]
+  },
+
+  "config_kpis_prioritarias": {
+
+    "schema": "bbdd_cos_bog_claro_recuperacion",
+
+    "tabla_alerta": "",
+
+    "sql_file_name": "_sql_max_detalle_agente_prioritarias.sql",
+
+    "stored_procedures": [],
+
+    "http_vcdl": "https", 
+    "user_vcdl": "1192757808",
+    "pass_vcdl": "1192757808",
+    "server_vcdl": "soulphone-fiveone.groupcos.com.co",
+
+    "campanas_vcdl": ["RECUPERA", "CAR", "SANILLO", "3ANILLO"],
+
+    "archivo_excel": "Z:\\WORKFORCE\\02. Workforce\\WFM_CAMPANAS\\Claro - Prioritarias\\pdc\\kpis_prioritarias_dts.xlsx",
+    
+    "campana": "Kpis_Prioritarias",
+
+    "var_captura_img": [
+      {
+        "hojas_captura_img": "Detalle_X_Agente_Carol",
+        "rangos_captura_img": "A1:O45",
+        "nombre_grupo": "Staff recuperación"
+      },
+      {
+        "hojas_captura_img": "Detalle_X_Agente_Gina",
+        "rangos_captura_img": "A1:O45",
+        "nombre_grupo": "Staff Reversion Movil"
+      },
+      {
+        "hojas_captura_img": "Detalle_X_Agente_Jilber",
+        "rangos_captura_img": "A1:O45",
+        "nombre_grupo": "Staff tercer anillo"
+      },
+      {
+        "hojas_captura_img": "Detalle_X_Agente_Jose",
+        "rangos_captura_img": "A1:O45",
+        "nombre_grupo": "Staff Reversion Movil"
+      },
+            {
+        "hojas_captura_img": "Detalle_X_Agente_Yegnner",
+        "rangos_captura_img": "A1:O45",
+        "nombre_grupo": "Staff recuperación"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares_Carol",
+        "rangos_captura_img": "A1:P45",
+        "nombre_grupo": "Staff recuperación"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares_Gina",
+        "rangos_captura_img": "A1:P45",
+        "nombre_grupo": "Staff Reversion Movil"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares_Jilber",
+        "rangos_captura_img": "A1:P45",
+        "nombre_grupo": "Staff tercer anillo"
+      },
+      {
+        "hojas_captura_img": "Exceso_Auxiliares_Jose",
+        "rangos_captura_img": "A1:P45",
+        "nombre_grupo": "Staff Reversion Movil"
+      },
+            {
+        "hojas_captura_img": "Exceso_Auxiliares_Yegnner",
+        "rangos_captura_img": "A1:P45",
+        "nombre_grupo": "Staff recuperación"
+      }
+    ]
+  }
+}

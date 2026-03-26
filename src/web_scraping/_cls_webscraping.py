@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 @author: Ronal Barberi
-@edit: Emerson Aguilar Cruz
+@edit: David Salcedo
 """
 
+import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
@@ -11,29 +12,29 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
 
 class WebScraping_Chrome:
 
     @staticmethod
     def Webdriver_ChrDP(driver_path):
         options = webdriver.ChromeOptions()
+        options.add_argument("--headless=new")
         options.add_argument("--disable-popup-blocking")
         options.add_argument("--disable-notifications")
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--no-sandbox")
-        options.add_argument("--ignore-certificate-errors")
-        options.add_argument("--ignore-ssl-errors")
-        options.add_argument("--allow-insecure-localhost")
+        options.add_argument("--log-level=3")
+        options.add_experimental_option("excludeSwitches", ["enable-logging"])
         prefs = {
             "download.prompt_for_download": False,
             "download.directory_upgrade": True,
             "safebrowsing.enabled": True
         }
         options.add_experimental_option("prefs", prefs)
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        service = Service(executable_path=driver_path)
+        service = Service(executable_path=driver_path, log_output=open(os.devnull, 'w'))
         driver = webdriver.Chrome(service=service, options=options)
         driver.maximize_window()
         return driver
@@ -41,15 +42,15 @@ class WebScraping_Chrome:
     @staticmethod
     def Webdriver_ChrDP_DP(driver_path, download_path):
         options = webdriver.ChromeOptions()
+        options.add_argument("--headless=new")
         options.add_argument("--disable-popup-blocking")
         options.add_argument("--disable-notifications")
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--no-sandbox")
-        options.add_argument("--ignore-certificate-errors")
-        options.add_argument("--ignore-ssl-errors")
-        options.add_argument("--allow-insecure-localhost")
+        options.add_argument("--log-level=3")
+        options.add_experimental_option("excludeSwitches", ["enable-logging"])
         prefs = {
             "download.default_directory": download_path,
             "download.prompt_for_download": False,
@@ -57,21 +58,41 @@ class WebScraping_Chrome:
             "safebrowsing.enabled": True
         }
         options.add_experimental_option("prefs", prefs)
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        service = Service(executable_path=driver_path)
+        service = Service(executable_path=driver_path, log_output=open(os.devnull, 'w'))
         driver = webdriver.Chrome(service=service, options=options)
         driver.maximize_window()
         return driver
     
     @staticmethod
     def Webdriver_ChrPP_DP(profile_path, driver_path):
+        import psutil, os
+
+        lock_file = os.path.join(profile_path, "Default", "lockfile")
+        singleton_lock = os.path.join(profile_path, "SingletonLock")
+        for lock in (lock_file, singleton_lock):
+            try:
+                if os.path.exists(lock):
+                    os.remove(lock)
+            except Exception:
+                pass
+
         options = webdriver.ChromeOptions()
         options.add_argument(f"--user-data-dir={profile_path}")
         options.add_argument("--disable-popup-blocking")
         options.add_argument("--disable-notifications")
+        options.add_argument("--disable-sync")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--no-first-run")
+        options.add_argument("--no-default-browser-check")
+        options.page_load_strategy = 'none'
         service = Service(executable_path=driver_path)
         driver = webdriver.Chrome(service=service, options=options)
-        driver.maximize_window()
+        driver.set_page_load_timeout(60)
+        try:
+            driver.maximize_window()
+        except Exception:
+            pass
         return driver
     
     @staticmethod
@@ -131,15 +152,24 @@ class WebScraping_Chrome:
     @staticmethod
     def WebScraping_ClearCSS(driver, css_selector):
         elemento = driver.find_element(By.CSS_SELECTOR, css_selector)
-        elemento.clear()
-    
+        try:
+            driver.execute_script("arguments[0].scrollIntoView(true);", elemento)
+            elemento.clear()
+        except Exception:
+            elemento.send_keys(Keys.CONTROL + 'a')
+            elemento.send_keys(Keys.DELETE)
+
     # Uso:
     # WebScraping_Clear_CSS(driver, 'button[type="submit"][color="primary"]')
 
     @staticmethod
     def WebScraping_ClickCSS(driver, css_selector):
         elemento = driver.find_element(By.CSS_SELECTOR, css_selector)
-        elemento.click()
+        try:
+            elemento.click()
+        except Exception:
+            driver.execute_script("arguments[0].scrollIntoView(true);", elemento)
+            driver.execute_script("arguments[0].click();", elemento)
     
     # Uso:
     # WebScraping_ClickCSS(driver, 'button[type="submit"][color="primary"]')
@@ -147,7 +177,11 @@ class WebScraping_Chrome:
     @staticmethod
     def WebScraping_SendKeysCSS(driver, css_selector, key):
         elemento = driver.find_element(By.CSS_SELECTOR, css_selector)
-        elemento.clear()
+        try:
+            elemento.clear()
+        except Exception:
+            elemento.send_keys(Keys.CONTROL + 'a')
+            elemento.send_keys(Keys.DELETE)
         elemento.send_keys(key)
 
     # Uso: 

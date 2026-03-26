@@ -39,6 +39,7 @@ class DetalleAgenteVcdl:
         self.engine = MySQLConnector().get_connection(database=self.schema) if schema else None
         self.xpath_campanas = '//*[@id="vicidial_report"]/table/tbody/tr/td[2]/select'
         self.xpath_grupos_usuario = '//*[@id="vicidial_report"]/table/tbody/tr/td[3]/select/option[1]'
+        self.xpath_display = '//*[@id="vicidial_report"]/table/tbody/tr/td[5]/select/option[2]'
         self.xpath_remitir = '//*[@id="vicidial_report"]/table/tbody/tr/td[5]/input'
         self.xpath_descargar = '//*[@id="vicidial_report"]/table/tbody/tr/td[6]/font/a[1]'
         self.xpath_wpp = '//*[@id="vicidial_report"]/table/tbody/tr/td[1]/input[1]'
@@ -92,6 +93,11 @@ class DetalleAgenteVcdl:
             WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_grupos_usuario)
             print("Grupos de usuario seleccionados")
             time.sleep(1)
+            
+            WebScraping_Chrome.WebScraping_Wait(driver, 150, self.xpath_display)
+            WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_display)
+            print("Display a texto seleccionado")
+            time.sleep(1)
 
             WebScraping_Chrome.WebScraping_Wait(driver, 150, self.xpath_remitir)
             WebScraping_Chrome.WebScraping_Nav(driver, self.xpath_remitir)
@@ -134,8 +140,7 @@ class DetalleAgenteVcdl:
             't_bano', 't_break', 't_chat', 't_capacitacion', 't_venta',
             't_coach', 't_feedback', 't_fallt', 't_email', 't_lagged', 
             't_llms', 't_login', 't_pausa_activa', 't_pausa_productiva', 
-            't_visible_vcdl', 't_hiiden_vcdl', 't_video_llamada', 't_whatsapp',
-            'fecha_cargue'
+            't_visible_vcdl', 't_hiiden_vcdl', 'fecha_cargue'
         ]
         
         for filename in os.listdir(self.download_path):
@@ -187,9 +192,7 @@ class DetalleAgenteVcdl:
                         'PAPRO': 't_pausa_productiva',
                         'PRETU': 't_preturno',
                         'VISIBLE': 't_visible_vcdl',
-                        'HIDDEN': 't_hiiden_vcdl',
-                        'VILLA': 't_video_llamada',
-                        'WHAT': 't_whatsapp'            
+                        'HIDDEN': 't_hiiden_vcdl'          
                     }
                     df_vcdl.rename(columns=rename_dict, inplace=True)
                     

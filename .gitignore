@@ -1,6 +1,15 @@
-# Ignorar entorno virtual y configuración de VSCode
+# --- Python & General ---
 .venv/
 .vscode/
-# Ignorar todos los archivos .env en cualquier subcarpeta
 **/.env
+
+# --- Node.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Archivos de Sistema ---
+.DS_Store
+Thumbs.db
 

@@ -59,7 +59,7 @@ def ejecutar_excel_por_campana(conf, index=0):
         'User Data',
         f'Default',
         f'perfil_selenium_{index}'
-#        f'perfil_selenium_4'
+        # f'perfil_selenium_1'
     )
     try:
         print(f"Iniciando Excel: {conf['campana']} con perfil {profile_path}")
@@ -107,7 +107,7 @@ def leer_query(path):
 def main_multi():
 
 #    config_campanas = [config["config_pdc_chubb"]]
-    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"], config["config_pdc_axa_colpatria"]]
+    config_campanas = [config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"]]
 
     print("🚀 Ejecutando VCDL en paralelo...")
     with ThreadPoolExecutor(max_workers=len(config_campanas)) as executor:
@@ -171,15 +171,13 @@ excel_lock = Lock()
 if __name__ == '__main__':
 
 #    config_campanas = [config["config_pdc_chubb"]]
-    config_campanas = [config["config_pdc_chubb"], config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"], config["config_pdc_axa_colpatria"]]
+    config_campanas = [config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"]]
     
-    campañas_a_ejecutar = []
-    campañas_fallidas = []
     lock = Lock()
 
     intentos_max = 5
-    intervalo_consulta = 300
-    intervalo_max = 50
+    intervalo_consulta = 120
+    intervalo_max = 300
 
     def evaluar_y_ejecutar(conf, index):
         intentos = 0
@@ -239,34 +237,4 @@ if __name__ == '__main__':
         for future in as_completed(futures):
             future.result()
 
-    if campañas_a_ejecutar:
-        print("\n Error: Ejecutando campañas que cumplieron...")
-
-        def main_multi_filtrado(campañas_filtradas):
-            with ThreadPoolExecutor(max_workers=len(campañas_filtradas)) as executor:
-                futures = [executor.submit(ejecutar_vcdl_por_campana, conf) for conf in campañas_filtradas]
-                for future in as_completed(futures):
-                    future.result()
-
-            processors_excel = []
-            for idx, conf in enumerate(campañas_filtradas, start=1):
-                processor = ejecutar_excel_por_campana(conf, idx)
-                processors_excel.append((conf, processor))
-
-            with ThreadPoolExecutor(max_workers=len(processors_excel)) as executor:
-                futures = [executor.submit(ejecutar_envio_pdc_por_campana, conf, processor)
-                           for conf, processor in processors_excel]
-                for future in as_completed(futures):
-                    future.result()
-
-        main_multi_filtrado(campañas_a_ejecutar)
-    else:
-        print("\n Error: Error Ninguna campaña cumplió con el tiempo requerido tras los intentos.")
-
-    if campañas_fallidas:
-        print("\n Error: Error Ejecutando envíos de error para campañas fallidas...")
-        with ThreadPoolExecutor(max_workers=len(campañas_fallidas)) as executor:
-            futures = [executor.submit(env_error, conf, idx)
-                    for idx, conf in enumerate(campañas_fallidas, start=1)]
-            for future in as_completed(futures):
-                future.result()
+    print("\n✅ Proceso finalizado para todas las campañas.")

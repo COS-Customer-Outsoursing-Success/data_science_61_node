@@ -1,0 +1,27 @@
+{
+  "name": "data_science_61_node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/COS-Customer-Outsoursing-Success/PDC_data_science_61.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/COS-Customer-Outsoursing-Success/PDC_data_science_61/issues"
+  },
+  "homepage": "https://github.com/COS-Customer-Outsoursing-Success/PDC_data_science_61#readme",
+  "dependencies": {
+    "dotenv": "^17.3.1"
+  }
+}
