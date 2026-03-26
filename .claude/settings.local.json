@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(powershell -Command \"\\(Get-Item ''C:/Program Files/Google/Chrome/Application/chrome.exe''\\).VersionInfo.FileVersion\")",
-      "Bash(powershell -Command \"\\(Get-Item ''C:/Program Files \\(x86\\)/Google/Chrome/Application/chrome.exe''\\).VersionInfo.FileVersion\")",
-      "Bash(\"/c/Users/Jhoner.Salcedo/Documents/chromedriver.exe\" --version)"
-    ]
-  }
-}
