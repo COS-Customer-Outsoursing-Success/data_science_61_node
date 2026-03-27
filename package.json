@@ -7,7 +7,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "wpp": "node whatsapp_service/index.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,9 @@
   },
   "homepage": "https://github.com/COS-Customer-Outsoursing-Success/PDC_data_science_61#readme",
   "dependencies": {
-    "dotenv": "^17.3.1"
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.34.6"
   }
 }

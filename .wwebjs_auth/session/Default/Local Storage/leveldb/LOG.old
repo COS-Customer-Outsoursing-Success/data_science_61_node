@@ -1,0 +1,6 @@
+2026/03/27-11:12:05.496 5908 Reusing MANIFEST C:\01_github\data_science_61_node\.wwebjs_auth\session\Default\Local Storage\leveldb/MANIFEST-000001
+2026/03/27-11:12:05.504 5908 Recovering log #9
+2026/03/27-11:12:05.507 5908 Reusing old log C:\01_github\data_science_61_node\.wwebjs_auth\session\Default\Local Storage\leveldb/000009.log 
+2026/03/27-11:14:06.085 5a70 Level-0 table #13: started
+2026/03/27-11:14:06.092 5a70 Level-0 table #13: 17753 bytes OK
+2026/03/27-11:14:06.095 5a70 Delete type=0 #9
