@@ -1,12 +1,14 @@
 """
-Created By Emerson Aguilar Cruz
+Created By David Salcedo
 """
 
 import os
 import sys
+import subprocess
 import pandas as pd
 import time
 import json
+import requests
 from pathlib import Path
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -16,7 +18,8 @@ current_folder = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(current_folder)
 sys.path.append(current_folder)
 
-from excel_app._cls_excel_auto_manager import Process_Excel, Envio_Pdc_Wpp, EnvioErrorPdc
+from excel_app._cls_excel_auto_manager import Process_Excel
+from excel_app._cls_envio_wpp_http import EnvioWppHttp, EnvioErrorHttp
 from vicidial._cls_scraping_detalle_agente import DetalleAgenteVcdl
 from conexiones_db._cls_sqlalchemy import MySQLConnector
 
@@ -26,6 +29,42 @@ with open(config_path, 'r', encoding='utf-8') as f:
 
 parametro_num_day = 1
 path_home = str(Path.home())
+WPP_URL = "http://localhost:3000"
+
+def iniciar_servicio_wpp():
+    """Inicia el microservicio Node.js de WhatsApp y espera que este listo.
+    Si la sesion expiro, muestra el QR en consola para re-autenticar.
+    """
+    node_script = os.path.join(project_root, 'whatsapp_service', 'index.js')
+    proceso = subprocess.Popen(
+        ['node', node_script],
+        cwd=project_root,
+        stdout=None,   # visible en consola para mostrar QR si es necesario
+        stderr=subprocess.DEVNULL
+    )
+    print("Iniciando servicio WhatsApp Node.js...")
+    print("Si la sesion expiro, escanea el QR que aparece arriba con tu celular.")
+    for _ in range(120):   # 120 segundos: tiempo suficiente para escanear QR
+        try:
+            r = requests.get(f"{WPP_URL}/status", timeout=2)
+            if r.json().get('listo'):
+                print("Servicio WhatsApp listo.")
+                return proceso
+        except Exception:
+            pass
+        time.sleep(1)
+    proceso.terminate()
+    raise RuntimeError("El servicio WhatsApp no inicio en el tiempo esperado. Verifica la conexion.")
+
+def detener_servicio_wpp(proceso):
+    """Detiene el microservicio Node.js."""
+    if proceso:
+        proceso.terminate()
+        try:
+            proceso.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            proceso.kill()
+        print("Servicio WhatsApp detenido.")
 
 def ejecutar_vcdl_por_campana(conf):
 
@@ -50,22 +89,10 @@ def ejecutar_vcdl_por_campana(conf):
         print(f"❌ Error VCDL en campaña {conf['campana']}: {str(e)}")
 
 def ejecutar_excel_por_campana(conf, index=0):
-    profile_path = os.path.join(
-        path_home,
-        'AppData',
-        'Local',
-        'Google',
-        'Chrome',
-        'User Data',
-        f'Default',
-        f'perfil_selenium_{index}'
-        # f'perfil_selenium_1'
-    )
     try:
-        print(f"Iniciando Excel: {conf['campana']} con perfil {profile_path}")
-        
+        print(f"Iniciando Excel: {conf['campana']}")
+
         processor_excel = Process_Excel(
-            profile_path=profile_path,
             schema=conf["schema"],
             stored_procedures=conf["stored_procedures"],
             archivo_excel=conf["archivo_excel"],
@@ -87,7 +114,7 @@ def ejecutar_excel_por_campana(conf, index=0):
 
 def ejecutar_envio_pdc_por_campana(conf, processor_excel):
 
-    processor_envio_wpp = Envio_Pdc_Wpp(processor_excel)
+    processor_envio_wpp = EnvioWppHttp(processor_excel)
     try:
         processor_envio_wpp.env_pdc_bot()
     except Exception as e:
@@ -131,10 +158,6 @@ def main_multi():
 def env_error(conf, index):
     sql_file_path = os.path.join(project_root, 'sql', conf["sql_file_name"])
     tabla_alerta = conf["tabla_alerta"]
-    profile_path = os.path.join(
-        path_home, 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default',
-        f'perfil_selenium_{index}'
-    )
 
     engine = MySQLConnector().get_connection(database='bbdd_config')
     print("Consultando maxima hora de actualizacion")
@@ -156,10 +179,9 @@ def env_error(conf, index):
     print(f"Hora actual: {hora_actual}")
     print(f"Diferencia en minutos: {diferencia_minutos:.2f}")
 
-    processor_env_error = EnvioErrorPdc(
+    processor_env_error = EnvioErrorHttp(
         tabla_alerta=tabla_alerta,
-        diferencia_minutos=diferencia_minutos,
-        profile_path=profile_path
+        diferencia_minutos=diferencia_minutos
     )
 
     try:
@@ -169,6 +191,7 @@ def env_error(conf, index):
 
 excel_lock = Lock()
 if __name__ == '__main__':
+    proceso_wpp = None
 
 #    config_campanas = [config["config_pdc_chubb"]]
     config_campanas = [config["config_pdc_colsubsidio"], config["config_pdc_colsubsidio_atraccion"]]
@@ -229,12 +252,18 @@ if __name__ == '__main__':
         env_error(conf, index)
 
 
-    with ThreadPoolExecutor(max_workers=len(config_campanas)) as executor:
-        futures = [
-            executor.submit(evaluar_y_ejecutar, conf, idx)
-            for idx, conf in enumerate(config_campanas, start=1)
-        ]
-        for future in as_completed(futures):
-            future.result()
+    try:
+        proceso_wpp = iniciar_servicio_wpp()
 
-    print("\n✅ Proceso finalizado para todas las campañas.")
+        with ThreadPoolExecutor(max_workers=len(config_campanas)) as executor:
+            futures = [
+                executor.submit(evaluar_y_ejecutar, conf, idx)
+                for idx, conf in enumerate(config_campanas, start=1)
+            ]
+            for future in as_completed(futures):
+                future.result()
+
+        print("\n Proceso finalizado para todas las campañas.")
+
+    finally:
+        detener_servicio_wpp(proceso_wpp)

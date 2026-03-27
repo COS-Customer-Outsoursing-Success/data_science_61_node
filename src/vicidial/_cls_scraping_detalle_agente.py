@@ -1,6 +1,6 @@
 # -- coding: utf-8 --
 """
-@Author: Emerson.Aguilar
+@Author: David Salcedo
 """
 import os
 import time

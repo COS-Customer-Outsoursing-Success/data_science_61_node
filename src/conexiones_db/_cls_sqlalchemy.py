@@ -41,7 +41,7 @@ class MySQLConnector:
                 connection_string,
                 pool_recycle=9600,
                 isolation_level="AUTOCOMMIT",
-                echo_pool=True,
+                echo_pool=False,
             )
             return engine
         except Exception as e:

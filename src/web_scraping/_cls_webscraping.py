@@ -5,6 +5,7 @@
 """
 
 import os
+import subprocess
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
@@ -34,7 +35,7 @@ class WebScraping_Chrome:
             "safebrowsing.enabled": True
         }
         options.add_experimental_option("prefs", prefs)
-        service = Service(executable_path=driver_path, log_output=open(os.devnull, 'w'))
+        service = Service(executable_path=driver_path, log_output=subprocess.DEVNULL)
         driver = webdriver.Chrome(service=service, options=options)
         driver.maximize_window()
         return driver
@@ -58,7 +59,7 @@ class WebScraping_Chrome:
             "safebrowsing.enabled": True
         }
         options.add_experimental_option("prefs", prefs)
-        service = Service(executable_path=driver_path, log_output=open(os.devnull, 'w'))
+        service = Service(executable_path=driver_path, log_output=subprocess.DEVNULL)
         driver = webdriver.Chrome(service=service, options=options)
         driver.maximize_window()
         return driver

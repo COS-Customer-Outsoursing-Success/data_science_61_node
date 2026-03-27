@@ -1,5 +1,5 @@
 """""
-Created By Emerson Aguilar Cruz
+Created By David Salcedo
 """""
 import win32com.client
 import win32clipboard
