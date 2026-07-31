@@ -215,6 +215,22 @@ class Process_Excel:
         print("Advertencia: Excel no respondió dentro del tiempo esperado.")
         return False
 
+    def _com_retry(self, fn, max_intentos=8, pausa=4):
+        """Ejecuta fn() reintentando si Excel rechaza la llamada (RPC_E_CALL_REJECTED)."""
+        for i in range(max_intentos):
+            try:
+                return fn()
+            except Exception as e:
+                codigo = getattr(e, 'hresult', None) or (e.args[0] if e.args else None)
+                if codigo == -2147418111:  # RPC_E_CALL_REJECTED
+                    if i < max_intentos - 1:
+                        print(f"Excel ocupado (RPC_E_CALL_REJECTED), reintentando en {pausa}s... ({i+1}/{max_intentos})")
+                        time.sleep(pausa)
+                    else:
+                        raise
+                else:
+                    raise
+
     def refresh_archivo_excel(self):
         self.kill_excel()
         """Actualiza todas las conexiones y tablas dinámicas en el archivo Excel."""
@@ -232,19 +248,49 @@ class Process_Excel:
             self.esperar_excel_listo(excel)
             
             print("Actualizando conexiones...")
+            # Forzar refresh sincrono para evitar errores con CalculateUntilAsyncQueriesDone
+            for conn in libro.Connections:
+                try:
+                    conn.OLEDBConnection.BackgroundQuery = False
+                except Exception:
+                    try:
+                        conn.ODBCConnection.BackgroundQuery = False
+                    except Exception:
+                        pass
+            for hoja in libro.Sheets:
+                try:
+                    for qt in hoja.QueryTables:
+                        qt.BackgroundQuery = False
+                except Exception:
+                    continue
+
             libro.RefreshAll()
-            excel.CalculateUntilAsyncQueriesDone()
+            try:
+                excel.CalculateUntilAsyncQueriesDone()
+            except Exception as e:
+                print(f"Advertencia CalculateUntilAsyncQueriesDone: {e}. Esperando 30s...")
+                time.sleep(30)
             print("Actualización de datos completada")
             
             time.sleep(3)
-            
+            self.esperar_excel_listo(excel, tiempo_max=30)
+
             print("Actualizando tablas dinámicas...")
-            for hoja in libro.Sheets:
-                try:
-                    for pt in hoja.PivotTables():
-                        pt.RefreshTable()
-                except:
-                    continue
+            try:
+                num_hojas = self._com_retry(lambda: libro.Sheets.Count)
+                for i in range(1, num_hojas + 1):
+                    try:
+                        hoja = self._com_retry(lambda i=i: libro.Sheets(i))
+                        pts  = self._com_retry(lambda: hoja.PivotTables())
+                        for pt in pts:
+                            try:
+                                self._com_retry(lambda pt=pt: pt.RefreshTable())
+                            except Exception:
+                                pass
+                    except Exception:
+                        continue
+            except Exception as e:
+                print(f"Advertencia tablas dinámicas: {e}")
             print("Tablas dinámicas actualizadas")
             
             time.sleep(3)
@@ -254,35 +300,55 @@ class Process_Excel:
             
         except Exception as e:
             print(f"❌ Error: {str(e)}")
+            if libro is not None:
+                try: libro.Close(SaveChanges=False)
+                except: pass
+            if excel is not None:
+                try: excel.Quit()
+                except: pass
+            pythoncom.CoUninitialize()
             raise
 
 
     def exportar_imagenes_excel(self, excel, libro):
         print("\n Iniciando captura de imágenes...")
-        excel.ScreenUpdating = True
-        time.sleep(2)
+
+        # Excel puede estar ocupado (RPC_E_CALL_REJECTED) justo después del refresh.
+        # Reintentar hasta 10 veces con pausa de 3 s antes de continuar.
+        for intento_sc in range(10):
+            try:
+                excel.ScreenUpdating = True
+                break
+            except Exception:
+                if intento_sc < 9:
+                    print(f"Excel ocupado, esperando... ({intento_sc + 1}/10)")
+                    time.sleep(3)
+                else:
+                    raise
+
+        time.sleep(8)
 
         try:
             for captura_img in self.var_captura_img:
                 intentos = 0
                 exito = False
 
-                while intentos < 3 and not exito:
+                while intentos < 5 and not exito:
                     try:
                         print(f"Intento {intentos + 1} para hoja: {captura_img['hojas_captura_img']}")
-                        
-                        excel.CalculateUntilAsyncQueriesDone()
-                        hoja = libro.Worksheets(captura_img['hojas_captura_img'])
-                        hoja.Activate()
 
-                        self.esperar_excel_listo(excel)
+                        self._com_retry(lambda: excel.CalculateUntilAsyncQueriesDone())
+                        hoja = self._com_retry(lambda: libro.Worksheets(captura_img['hojas_captura_img']))
+                        self._com_retry(lambda: hoja.Activate())
+
+                        self.esperar_excel_listo(excel, tiempo_max=15)
                         time.sleep(5)
 
-                        excel.CalculateUntilAsyncQueriesDone()
+                        self._com_retry(lambda: excel.CalculateUntilAsyncQueriesDone())
                         print(f"Capturando {captura_img['rangos_captura_img']} de {captura_img['hojas_captura_img']}")
 
-                        rango = hoja.Range(captura_img['rangos_captura_img'])
-                        rango.CopyPicture(Format=2)
+                        rango = self._com_retry(lambda: hoja.Range(captura_img['rangos_captura_img']))
+                        self._com_retry(lambda: rango.CopyPicture(Format=2))
                         time.sleep(5)
 
                         img = None
@@ -342,7 +408,7 @@ class Process_Excel:
                     intentos += 1
 
                 if not exito:
-                    print(f"Error: Error Fallaron los 3 intentos para capturar {captura_img['hojas_captura_img']}")
+                    print(f"Error: Error Fallaron los 5 intentos para capturar {captura_img['hojas_captura_img']}")
 
         except Exception as e:
             print(f"Error: Error general en exportar_imagenes_excel: {str(e)}")
@@ -390,12 +456,17 @@ class Process_Excel:
             except Exception as e:
                 print(f"Error: Error procesando {captura_txt.get('hojas_captura_img', 'hoja desconocida')}: {str(e)}")
         
-        print("Guardando...")
-        libro.Save()
-        time.sleep(5)
-        libro.Close(SaveChanges=False)
-        excel.Quit()
-        pythoncom.CoUninitialize()
+        try:
+            print("Guardando...")
+            libro.Save()
+        except Exception as e:
+            print(f"Error al guardar libro: {e}")
+        finally:
+            try: libro.Close(SaveChanges=False)
+            except: pass
+            try: excel.Quit()
+            except: pass
+            pythoncom.CoUninitialize()
 
 class Envio_Pdc_Wpp:
 

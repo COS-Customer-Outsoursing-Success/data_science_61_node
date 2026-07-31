@@ -48,8 +48,9 @@ app.post('/send-image', async (req, res) => {
         await enviarImagen(group, image_path, caption || '');
         res.json({ ok: true, message: `Imagen enviada a "${group}"` });
     } catch (err) {
-        console.error('[ERROR /send-image] Full error:', err);
-        res.status(500).json({ ok: false, error: err.message || String(err) });
+        const errorMsg = err instanceof Error ? err.message : JSON.stringify(err) || String(err);
+        console.log('[ERROR /send-image] Full error:', JSON.stringify(err), String(err), '| Msg:', errorMsg);
+        res.status(500).json({ ok: false, error: errorMsg });
     }
 });
 
