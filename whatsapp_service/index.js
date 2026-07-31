@@ -12,6 +12,8 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
+require('./logger').activarLogPersistente();
+
 const express = require('express');
 const { iniciarCliente, enviarImagen, enviarTexto, getEstado } = require('./wpp_client');
 

@@ -8,6 +8,7 @@ Iniciar con: npm run wpp
 """
 
 import os
+import time
 import requests
 from dotenv import dotenv_values
 from excel_app._cls_excel_auto_manager import Process_Excel
@@ -15,6 +16,17 @@ from excel_app._cls_excel_auto_manager import Process_Excel
 _project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _wpp_env = dotenv_values(os.path.join(_project_root, 'whatsapp_service', '.env'))
 _WPP_HEADERS = {"x-api-token": _wpp_env.get("WPP_API_TOKEN", "")}
+
+_INTENTOS_MAX = 3
+_ESPERAS_SEGUNDOS = [4, 10]  # entre intento 1->2 y 2->3
+
+
+def _es_error_permanente(mensaje_error):
+    """Errores de configuracion (no de red) que no vale la pena reintentar."""
+    if not mensaje_error:
+        return False
+    mensaje = mensaje_error.lower()
+    return 'no encontrado' in mensaje or 'no esta listo' in mensaje
 
 
 class EnvioWppHttp:
@@ -63,6 +75,10 @@ class EnvioWppHttp:
                 print(f"Imagen no encontrada: {imagen_path}")
                 continue
 
+            self._enviar_imagen_con_reintentos(nombre_grupo, imagen_path, caption)
+
+    def _enviar_imagen_con_reintentos(self, nombre_grupo, imagen_path, caption):
+        for intento in range(1, _INTENTOS_MAX + 1):
             try:
                 r = requests.post(
                     f"{self.WPP_URL}/send-image",
@@ -76,11 +92,22 @@ class EnvioWppHttp:
                 )
                 data = r.json()
                 if data.get("ok"):
-                    print(f"Imagen enviada a '{nombre_grupo}'")
-                else:
-                    print(f"Error enviando a '{nombre_grupo}': {data.get('error')}")
+                    print(f"Imagen enviada a '{nombre_grupo}' (intento {intento}/{_INTENTOS_MAX})")
+                    return
+
+                error = data.get('error')
+                if _es_error_permanente(error):
+                    print(f"Error permanente enviando a '{nombre_grupo}': {error}. No se reintenta.")
+                    return
+                print(f"Error enviando a '{nombre_grupo}' (intento {intento}/{_INTENTOS_MAX}): {error}")
+
             except Exception as e:
-                print(f"Error en envio a '{nombre_grupo}': {e}")
+                print(f"Error de conexion enviando a '{nombre_grupo}' (intento {intento}/{_INTENTOS_MAX}): {e}")
+
+            if intento < _INTENTOS_MAX:
+                time.sleep(_ESPERAS_SEGUNDOS[intento - 1])
+
+        print(f"Fallo definitivo enviando imagen a '{nombre_grupo}' tras {_INTENTOS_MAX} intentos.")
 
 
 class EnvioErrorHttp:
@@ -103,20 +130,32 @@ class EnvioErrorHttp:
         )
 
     def bot_envio_error(self):
-        try:
-            r = requests.post(
-                f"{self.WPP_URL}/send-text",
-                json={
-                    "group":   self.GRUPO_ALERTA,
-                    "message": self.mensaje_alerta
-                },
-                headers=_WPP_HEADERS,
-                timeout=30
-            )
-            data = r.json()
-            if data.get("ok"):
-                print(f"Alerta enviada al grupo '{self.GRUPO_ALERTA}'")
-            else:
-                print(f"Error enviando alerta: {data.get('error')}")
-        except Exception as e:
-            print(f"Error en envio de alerta: {e}")
+        for intento in range(1, _INTENTOS_MAX + 1):
+            try:
+                r = requests.post(
+                    f"{self.WPP_URL}/send-text",
+                    json={
+                        "group":   self.GRUPO_ALERTA,
+                        "message": self.mensaje_alerta
+                    },
+                    headers=_WPP_HEADERS,
+                    timeout=30
+                )
+                data = r.json()
+                if data.get("ok"):
+                    print(f"Alerta enviada al grupo '{self.GRUPO_ALERTA}' (intento {intento}/{_INTENTOS_MAX})")
+                    return
+
+                error = data.get('error')
+                if _es_error_permanente(error):
+                    print(f"Error permanente enviando alerta: {error}. No se reintenta.")
+                    return
+                print(f"Error enviando alerta (intento {intento}/{_INTENTOS_MAX}): {error}")
+
+            except Exception as e:
+                print(f"Error de conexion enviando alerta (intento {intento}/{_INTENTOS_MAX}): {e}")
+
+            if intento < _INTENTOS_MAX:
+                time.sleep(_ESPERAS_SEGUNDOS[intento - 1])
+
+        print(f"Fallo definitivo enviando alerta al grupo '{self.GRUPO_ALERTA}' tras {_INTENTOS_MAX} intentos.")

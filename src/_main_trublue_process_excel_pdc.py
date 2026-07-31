@@ -21,6 +21,7 @@ sys.path.append(current_folder)
 from excel_app._cls_excel_auto_manager import Process_Excel
 from excel_app._cls_envio_wpp_http import EnvioWppHttp, EnvioErrorHttp
 from excel_app._cls_wpp_lock import adquirir_lock_wpp, liberar_lock_wpp
+from excel_app._cls_wpp_logger import activar_log_persistente
 from vicidial._cls_scraping_detalle_agente import DetalleAgenteVcdl
 from conexiones_db._cls_sqlalchemy import MySQLConnector
 
@@ -201,6 +202,7 @@ def env_error(conf, index):
 
 excel_lock = Lock()
 if __name__ == '__main__':
+    activar_log_persistente('trueblue')
     proceso_wpp = None
 
     config_campanas = [config["config_pdc_trueblue"]]
