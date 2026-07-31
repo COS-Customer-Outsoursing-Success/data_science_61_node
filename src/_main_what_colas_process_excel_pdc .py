@@ -30,6 +30,8 @@ with open(config_path, 'r', encoding='utf-8') as f:
     config = json.load(f)
 
 WPP_URL = "http://localhost:3000"
+_wpp_env = dotenv_values(os.path.join(project_root, 'whatsapp_service', '.env'))
+_WPP_HEADERS = {"x-api-token": _wpp_env.get("WPP_API_TOKEN", "")}
 
 def iniciar_servicio_wpp():
     """Inicia el microservicio Node.js de WhatsApp y espera que este listo.
@@ -64,7 +66,7 @@ def iniciar_servicio_wpp():
     print("Si la sesion expiro, escanea el QR que aparece arriba con tu celular.")
     for _ in range(300):   # 300 segundos: tiempo suficiente para escanear QR y cargar WA Web
         try:
-            r = requests.get(f"{WPP_URL}/status", timeout=2)
+            r = requests.get(f"{WPP_URL}/status", headers=_WPP_HEADERS, timeout=2)
             if r.json().get('listo'):
                 print("Servicio WhatsApp listo.")
                 return proceso

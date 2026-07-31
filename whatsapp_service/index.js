@@ -9,6 +9,9 @@
  *   POST /send-text     -> envia texto a un grupo
  */
 
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
 const express = require('express');
 const { iniciarCliente, enviarImagen, enviarTexto, getEstado } = require('./wpp_client');
 
@@ -16,6 +19,23 @@ const app = express();
 app.use(express.json());
 
 const PUERTO = 3000;
+const HOST = '127.0.0.1';
+
+// ─── Autenticacion ────────────────────────────────────────────────────────────
+// Exige un token compartido en el header x-api-token para todas las rutas.
+// Sin esto, cualquier proceso local podria enviar mensajes/imagenes sin control.
+const API_TOKEN = process.env.WPP_API_TOKEN;
+if (!API_TOKEN) {
+    console.error('[SERVER] Falta WPP_API_TOKEN en whatsapp_service/.env. El servicio no puede iniciar sin token.');
+    process.exit(1);
+}
+
+app.use((req, res, next) => {
+    if (req.headers['x-api-token'] !== API_TOKEN) {
+        return res.status(401).json({ error: 'Token invalido o ausente' });
+    }
+    next();
+});
 
 // ─── GET /status ─────────────────────────────────────────────────────────────
 // Permite verificar si el cliente WhatsApp esta listo antes de enviar
@@ -75,7 +95,7 @@ app.post('/send-text', async (req, res) => {
 // ─── Inicio ───────────────────────────────────────────────────────────────────
 iniciarCliente();
 
-app.listen(PUERTO, () => {
-    console.log(`[SERVER] Servicio WhatsApp escuchando en http://localhost:${PUERTO}`);
+app.listen(PUERTO, HOST, () => {
+    console.log(`[SERVER] Servicio WhatsApp escuchando en http://${HOST}:${PUERTO}`);
     console.log('[SERVER] Esperando que el cliente WhatsApp se conecte...');
 });

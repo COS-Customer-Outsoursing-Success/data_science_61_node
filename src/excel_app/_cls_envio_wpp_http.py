@@ -9,7 +9,12 @@ Iniciar con: npm run wpp
 
 import os
 import requests
+from dotenv import dotenv_values
 from excel_app._cls_excel_auto_manager import Process_Excel
+
+_project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_wpp_env = dotenv_values(os.path.join(_project_root, 'whatsapp_service', '.env'))
+_WPP_HEADERS = {"x-api-token": _wpp_env.get("WPP_API_TOKEN", "")}
 
 
 class EnvioWppHttp:
@@ -28,7 +33,7 @@ class EnvioWppHttp:
     def _verificar_servicio(self):
         """Verifica que el microservicio Node este activo y conectado a WhatsApp."""
         try:
-            r = requests.get(f"{self.WPP_URL}/status", timeout=5)
+            r = requests.get(f"{self.WPP_URL}/status", headers=_WPP_HEADERS, timeout=5)
             estado = r.json()
             if not estado.get("listo"):
                 raise RuntimeError("El cliente WhatsApp no esta listo. Verifica npm run wpp.")
@@ -66,6 +71,7 @@ class EnvioWppHttp:
                         "image_path": imagen_path,
                         "caption":    caption
                     },
+                    headers=_WPP_HEADERS,
                     timeout=60
                 )
                 data = r.json()
@@ -104,6 +110,7 @@ class EnvioErrorHttp:
                     "group":   self.GRUPO_ALERTA,
                     "message": self.mensaje_alerta
                 },
+                headers=_WPP_HEADERS,
                 timeout=30
             )
             data = r.json()
