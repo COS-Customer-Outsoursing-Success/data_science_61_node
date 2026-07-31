@@ -19,3 +19,23 @@ logs/
 bin/
 **/*.log
 **/*.tmp
+
+# --- Python bytecode ---
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# --- Credenciales y secretos ---
+.env
+.env.*
+!.env.example
+
+# --- Sesiones de WhatsApp (credenciales de sesion, no codigo) ---
+whatsapp_service/perfil_bot/
+whatsapp_service/sesion_baileys/
+whatsapp_service/Listado_Grupos.txt
+.wwebjs_auth/
+.wwebjs_cache/
+
+# --- Salidas generadas por el pipeline (se regeneran en cada corrida) ---
+data/
