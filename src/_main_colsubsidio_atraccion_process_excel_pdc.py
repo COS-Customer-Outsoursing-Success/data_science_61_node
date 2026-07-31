@@ -200,7 +200,7 @@ excel_lock = Lock()
 if __name__ == '__main__':
     proceso_wpp = None
 
-    config_campanas = [config["config_pdc_colsubsidio"]]
+    config_campanas = [config["config_pdc_colsubsidio_atraccion"]]
 
     lock = Lock()
 

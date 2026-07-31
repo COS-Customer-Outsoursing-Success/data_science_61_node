@@ -1,71 +1,5 @@
 {
 
-  "config_pdc_chubb": {
-
-    "schema": "bbdd_cos_bog_chubb",
-
-    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_chubb",
-
-    "sql_file_name": "_sql_max_call_date_chubb.sql",
-
-    "stored_procedures": [
-      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "ban100"}},
-      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "banco_w"}},
-      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "colsubsidio"}},
-      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "coomeva"}},
-      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "emcali"}},
-      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "esb"}},
-      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "falabella"}},
-      {"nombre": "sp_01_marcaciones_desgloce_dts_general", "parametros": {"param1": 1, "param2": "movistar"}}
-    ],
-
-    "http_vcdl": "http", 
-    "pass_vcdl": "wfm1031120694",    
-    "server_vcdl": "172.70.7.41",
-
-    "campanas_vcdl": [
-      "BANCHUB1", "BANCHUB2", "BANCHUB3", "BANCHUB4", "CHUBBAN1", "CHUBSAC",
-      "COLSAPI1", "COLSAPI2", "COLSAPI3", "COLSAPI4", "COLSAPI5", "COLSAPI6",
-      "COMASCOS", "COMOC2", "COMOCH", "COMPAAS2", "COMPAAS3", "COTARCH",
-      "COTARCH2", "COTARCO2", "EMCALI", "FA2APCH", "FA2APCH1", "FA3CHUB1",
-      "FAAPCOS", "FAAPCOS1", "FAAPCOS2", "FAAPCOS3", "FAAPCOS4", "FAAPCOS5",
-      "FAAPCOS6", "FAAPCOS8", "FALINAS1", "MOV_CHUB", "MOVCHUB2", "MOVCHUB3",
-      "MOVCHUB4", "MOVCHUB5", "MOVCHUB6", "MOVCHUB7", "SERFI1", "TMKESB2"
-    ],
-
-    "archivo_excel": "Z:\\WORKFORCE\\03. Mission\\Emerson Aguilar\\14. Chubb\\pdc_chubb_dts.xlsx",
-    
-    "campana": "Chubb",
-
-    "var_captura_img": [
-      {
-        "hojas_captura_img": "IndicadoresXSponsor",
-        "rangos_captura_img": "A1:L15",
-        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
-      },
-      {
-        "hojas_captura_img": "VentasXSponsor",
-        "rangos_captura_img": "A1:I27",
-        "nombre_grupo": "Chubb - COS TMK"
-      },
-      {
-        "hojas_captura_img": "Exceso_Auxiliares",
-        "rangos_captura_img": "A1:L62",
-        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
-      },
-      {
-        "hojas_captura_img": "Detalle_X_Agente_Gen",
-        "rangos_captura_img": "A1:O62",
-        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
-      },
-      {
-        "hojas_captura_img": "Ausentismo",
-        "rangos_captura_img": "A1:P55",
-        "nombre_grupo": "INFORMES Y REPORTES CHUBB"
-      }
-    ]
-  },
-
   "config_pdc_colsubsidio": {
     
     "schema": "bbdd_cos_bog_colsubsidio_servicio_empresas",
@@ -81,10 +15,12 @@
     ],
 
     "http_vcdl": "http",
-    
-    "pass_vcdl": "wfm1031120694",    
-    
-    "server_vcdl": "172.66.7.170",
+
+    "user_vcdl": "1031120694",
+
+    "pass_vcdl": "wfm1031120694",
+
+    "server_vcdl": "10.57.251.110",
 
     "campanas_vcdl": [
     "COLSAE_1", "COLSAE_2", "COLSAE_3", "COLSAE_4", "COLSAE_5", "COLSAE_6", "COLSAE_7", "COLSAE_8", "COLSAE_9",
@@ -124,67 +60,6 @@
     ]
   },
 
-  "config_pdc_wom_cobranza": {
-    
-    "schema": "bbdd_cs_bog_wom_cobranza",
-    
-    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_wom_cobranza",
-
-    "sql_file_name": "_sql_max_call_date_wom_cobranza.sql",
-    
-    "stored_procedures": [],
-    
-    "http_vcdl": "https", 
-    "pass_vcdl": "wfm1031120694",    
-    "server_vcdl": "soulphone-fiveone.groupcos.com",
-
-    "campanas_vcdl": [
-          "WOMCOBR1", "WOMCOBR2", "WOMCOBR3", "WOMCOBR4", "WOMCOBR5", "WOMCOBR6", "WOMCOBRA"
-    ],
-
-    "archivo_excel": "Z:\\WORKFORCE\\03. Mission\\Emerson Aguilar\\14. Chubb\\pdc_wom_cobranza_dts.xlsx",
-    
-    "campana": "Wom Cobranza",
-
-    "var_captura_img": [
-      {
-        "hojas_captura_img": "Intervalo_Wom_C",
-        "rangos_captura_img": "A1:L45",
-        "nombre_grupo": "WOM Cobranza - DS"
-      },
-      {
-        "hojas_captura_img": "Intervalo_Wom_NC",
-        "rangos_captura_img": "A1:L45",
-        "nombre_grupo": "WOM Cobranza - DS"
-      },
-      {
-        "hojas_captura_img": "Intervalo_Wom_PC",
-        "rangos_captura_img": "A1:L45",
-        "nombre_grupo": "WOM Cobranza - DS"
-      },
-      {
-        "hojas_captura_img": "Detalle X Agente",
-        "rangos_captura_img": "A1:M30",
-        "nombre_grupo": "WOM Cobranza - DS"
-      },
-      {
-        "hojas_captura_img": "Exceso_Auxiliares",
-        "rangos_captura_img": "B1:M24",
-        "nombre_grupo": "WOM Cobranza - DS"
-      },
-      {
-        "hojas_captura_img": "Detalle X Tipificacion",
-        "rangos_captura_img": "A1:N35",
-        "nombre_grupo": "WOM Cobranza - DS"
-      },
-      {
-        "hojas_captura_img": "Ausentismo",
-        "rangos_captura_img": "A1:P37",
-        "nombre_grupo": "WOM Cobranza - DS"
-      }
-    ] 
-  },
-
   "config_pdc_colsubsidio_atraccion": {
 
     "schema": "bbdd_cos_bog_colsubsidio_atraccion",
@@ -195,7 +70,8 @@
 
     "stored_procedures": [],
     
-    "http_vcdl": "http", 
+    "http_vcdl": "http",
+    "user_vcdl": "1031120694",
     "pass_vcdl": "wfm1031120694",
     "server_vcdl": "172.66.7.112:39743",
 
@@ -230,75 +106,86 @@
     ] 
   },
 
-  "config_pdc_axa_colpatria": {
+  "config_pdc_trueblue": {
 
-    "schema": "bbdd_cos_bog_grupo_axa",
+    "schema": "bbdd_cos_bog_truebluepet",
     
-    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_out_axa",
+    "tabla_alerta": "bbdd_bigdata_marcaciones_vicidial.tb_marcaciones_vicidial_inb_truebluepet",
   
-    "sql_file_name": "_sql_max_call_date_axa.sql",
+    "sql_file_name": "_sql_max_call_date_trueblue.sql",
 
-    "stored_procedures": [{"nombre": "sp_01_marcaciones_desgloce_dts", "parametros": {"param1": 1}}],
+    "stored_procedures": [],
     
-    "http_vcdl": "https", 
-    "pass_vcdl": "1031120694",
-    "server_vcdl": "soulphone-nine.groupcos.com.co",
+    "http_vcdl": "https",
+    "user_vcdl": "1073510841", 
+    "pass_vcdl": "1073510841",
+    "server_vcdl": "soulphone-zero.groupcos.com.co",
 
     "campanas_vcdl": [
-
-      "AXA_BIEN",
-      "AXA_COLP",
-      "AXA_COME",
-      "AXA_DESR",
-      "AXA_DIGT",
-      "AXA_FA10",
-      "AXA_FA11",
-      "AXA_FAL1",
-      "AXA_FAL2",
-      "AXA_FAL3",
-      "AXA_FAL4",
-      "AXA_FAL5",
-      "AXA_FAL6",
-      "AXA_FAL7",
-      "AXA_FAL8",
-      "AXA_FINC",
-      "AXA_MULT",
-      "AXA_OCEN",
-      "AXA_PICH",
-      "AXA_PLAN",
-      "AXA_REND",
-      "AXA_RENO",
-      "AXA_RETE",
-      "AXA_REVI",
-      "AXA_WHAT",
-      "AXA_WHDE"
     ],
 
-    "archivo_excel": "Z:\\WORKFORCE\\03. Mission\\Emerson Aguilar\\14. Chubb\\pdc_axa_dts.xlsx",
+    "archivo_excel": "Z:\\WORKFORCE\\02. Workforce\\WFM_CAMPANAS\\TrueBluePet\\PDC TrueBluePet\\pdc_TrueBluePet_dts.xlsx",
     
-    "campana": "Axa Colpatria",
+    "campana": "true blue pet",
 
     "var_captura_img": [
        
       {
-        "hojas_captura_img": "Ventas_Sponsor",
-        "rangos_captura_img": "A1:F14",
-        "nombre_grupo": "AXA - COS: OPERACION"
+        "hojas_captura_img": "PDC_IN",
+        "rangos_captura_img": "A1:P48",
+        "nombre_grupo": "120363422618661559@g.us"
       },
       {
-        "hojas_captura_img": "Exceso_Auxiliares",
-        "rangos_captura_img": "A1:L48",
-        "nombre_grupo": "Reporteria y WF Axa Cos"
+        "hojas_captura_img": "PDC_IN",
+        "rangos_captura_img": "A1:P48",
+        "nombre_grupo": "120363424826116434@g.us"
+      }
+    ]
+  },
+
+  "config_pdc_what_colas": {
+
+    "schema": "bbdd_bigdata_smcc",
+    
+    "tabla_alerta": "bbdd_bigdata_smcc.tb_smcc_fidelizacion_detallado_casos",
+  
+    "sql_file_name": "_sql_max_what_colas.sql",
+
+    "stored_procedures": [],
+    
+    "http_vcdl": "https",
+    "user_vcdl": "", 
+    "pass_vcdl": "",
+    "server_vcdl": "",
+
+    "campanas_vcdl": [
+    ],
+
+    "archivo_excel": "Z:\\WORKFORCE\\02. Workforce\\WFM_CAMPANAS\\Claro - Proactivas\\pdc\\pdc_entornos_digitales.xlsm",
+    
+    "campana": "Colas-WhatApps",
+
+    "var_captura_img": [
+       
+      {
+        "hojas_captura_img": "PDC_GENERAL",
+        "rangos_captura_img": "A1:P45",
+        "nombre_grupo": "573006851507-1533404427@g.us"
       },
       {
-        "hojas_captura_img": "Detalle_X_Agente_Gen",
-        "rangos_captura_img": "A1:O52",
-        "nombre_grupo": "Reporteria y WF Axa Cos"
+        "hojas_captura_img": "PDC_ENTORNOS_DIGITALES",
+        "rangos_captura_img": "A1:P45",
+        "nombre_grupo": "573006851507-1533404427@g.us"
       },
       {
-        "hojas_captura_img": "Ausentismo",
-        "rangos_captura_img": "A1:P55",
-        "nombre_grupo": "Reporteria y WF Axa Cos"
+        "hojas_captura_img": "PDC_ATEN_FIDE",
+        "rangos_captura_img": "A1:P45",
+        "nombre_grupo": "573006851507-1533404427@g.us"
+      },
+      {
+        "hojas_captura_img": "PDC_OTT",
+        "rangos_captura_img": "A1:P45",
+        "nombre_grupo": "573006851507-1533404427@g.us"
       }
     ]
   }
