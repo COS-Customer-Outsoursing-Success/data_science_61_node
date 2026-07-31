@@ -34,6 +34,7 @@ __pycache__/
 whatsapp_service/perfil_bot/
 whatsapp_service/sesion_baileys/
 whatsapp_service/Listado_Grupos.txt
+whatsapp_service/.wpp.lock
 .wwebjs_auth/
 .wwebjs_cache/
 

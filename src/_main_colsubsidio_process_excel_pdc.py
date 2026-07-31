@@ -20,6 +20,7 @@ sys.path.append(current_folder)
 
 from excel_app._cls_excel_auto_manager import Process_Excel
 from excel_app._cls_envio_wpp_http import EnvioWppHttp, EnvioErrorHttp
+from excel_app._cls_wpp_lock import adquirir_lock_wpp, liberar_lock_wpp
 from vicidial._cls_scraping_detalle_agente import DetalleAgenteVcdl
 from conexiones_db._cls_sqlalchemy import MySQLConnector
 
@@ -266,6 +267,10 @@ if __name__ == '__main__':
         env_error(conf, index)
 
 
+    if not adquirir_lock_wpp():
+        print("Error: Otra campaña sigue usando el servicio WhatsApp tras 10 minutos de espera. Abortando esta corrida.")
+        sys.exit(1)
+
     try:
         proceso_wpp = iniciar_servicio_wpp()
 
@@ -281,3 +286,4 @@ if __name__ == '__main__':
 
     finally:
         detener_servicio_wpp(proceso_wpp)
+        liberar_lock_wpp()
