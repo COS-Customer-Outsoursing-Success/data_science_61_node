@@ -171,11 +171,14 @@ def env_error(conf, index):
         user=_env60['DB_USER'],
         password=_env60['DB_PASSWORD'],
     )
-    print("Consultando maxima hora de actualizacion")
-    query_max = leer_query(sql_file_path)
-    print(f"Consulta leída, ejecutando...")
+    try:
+        print("Consultando maxima hora de actualizacion")
+        query_max = leer_query(sql_file_path)
+        print(f"Consulta leída, ejecutando...")
 
-    df = pd.read_sql(query_max, engine)
+        df = pd.read_sql(query_max, engine)
+    finally:
+        engine.dispose()
     df['hora_ultima_llamada'] = pd.to_datetime(df['hora_ultima_llamada'], errors='coerce')
     df['hora_ultima_llamada'] = df['hora_ultima_llamada'].fillna(pd.to_datetime('00:00:00'))
 
@@ -229,7 +232,10 @@ if __name__ == '__main__':
                     user=_env60['DB_USER'],
                     password=_env60['DB_PASSWORD'],
                 )
-                df = pd.read_sql(query_max, engine)
+                try:
+                    df = pd.read_sql(query_max, engine)
+                finally:
+                    engine.dispose()
 
  
                 df['hora_ultima_llamada'] = pd.to_datetime(df['hora_ultima_llamada'], errors='coerce')

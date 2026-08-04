@@ -5,7 +5,6 @@ import win32com.client
 import win32clipboard
 import warnings
 import time
-import psutil
 import pythoncom
 import glob
 import os
@@ -16,63 +15,6 @@ import threading
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from conexiones_db._cls_sqlalchemy import MySQLConnector
-
-class EjecucionStoredProcedure:
-
-    def __init__(self, schema, stored_procedures=None):
-        self.schema = schema
-        self.stored_procedures = stored_procedures or []
-        self.parar_sp = threading.Event()
-
-    def _cargar_indicador(self):
-        while not self.parar_sp.is_set():
-            for symbol in "|/-\\":
-                print(f"\rEjecutando SP... {symbol}", end="", flush=True)
-                time.sleep(0.1)
-                if self.parar_sp.is_set():
-                    break
-
-    def ejecutar_sps(self):
-        try:
-            print("Conectando a MySQL usando SQLAlchemy...")
-            engine = MySQLConnector.get_connection(database=self.schema)
-
-            with engine.connect() as conexion:
-                print("Conexión exitosa.")
-
-                for sp in self.stored_procedures:
-                    nombre = sp['nombre']
-                    parametros = sp.get('parametros', {})
-
-                    print(f"\nEjecutando Stored Procedure: {nombre}")
-                    self.parar_sp.clear()
-                    hilo_carga = threading.Thread(target=self._cargar_indicador)
-                    hilo_carga.start()
-
-                    try:
-                        if parametros:
-                            placeholders = ', '.join(f":{k}" for k in parametros)
-                            sql = text(f"CALL {nombre}({placeholders})")
-                            conexion.execute(sql, parametros)
-                        else:
-                            conexion.execute(text(f"CALL {nombre}()"))
-
-                        print(f"\nSP '{nombre}' ejecutado correctamente.")
-                    except Exception as e:
-                        print(f"Error al ejecutar '{nombre}': {e}")
-                    finally:
-                        self.parar_sp.set()
-                        hilo_carga.join()
-                        time.sleep(1)
-
-                print("Todos los Stored Procedures se ejecutaron.")
-
-        except SQLAlchemyError as e:
-            print(f"Error general al ejecutar SPs: {e}")
-        finally:
-            if 'engine' in locals():
-                engine.dispose()
-                print("Conexión cerrada.")
 
 class Process_Excel:
     def __init__(self, archivo_excel=None, var_captura_img=None, ruta_img=None,
@@ -87,6 +29,7 @@ class Process_Excel:
         self.schema = schema
         self.stored_procedures = stored_procedures or []
         self.parar_sp = threading.Event()
+        self.libro_solo_lectura = False
 
     def _cargar_indicador(self):
         while not self.parar_sp.is_set():
@@ -158,28 +101,26 @@ class Process_Excel:
             else:
                 print(f'Ruta no encontrada: {ruta}')
 
-    def kill_excel(self):
-        """Cierra todas las instancias de Excel mostrando una cuenta regresiva."""
-        print("¡Los archivos Excel se cerrarán en 5 segundos!")
-        
-        for i in range(5, 0, -1):
-            print(f"Cerrando en {i}...", end='\r')
-            time.sleep(1)
-        
-        print("\nCerrando Excel...")
-        excel_cerrados = 0
-        
-        for proc in psutil.process_iter(['pid', 'name']):
-            try:
-                if proc.info['name'] == 'EXCEL.EXE':
-                    psutil.Process(proc.info['pid']).terminate()
-                    excel_cerrados += 1
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                continue
-        
-        print(f"Se han cerrado {excel_cerrados} archivo(s) Excel." if excel_cerrados > 0 
-              else "No se encontraron instancias de Excel abiertas.")
-        print("Continuando con el proceso...")
+    def cerrar_libro_objetivo(self):
+        """Cierra únicamente la instancia de Excel que tiene abierto self.archivo_excel,
+        sin afectar otros libros que pueda tener abiertos un tercero en la misma máquina."""
+        carpeta = os.path.dirname(self.archivo_excel)
+        nombre = os.path.basename(self.archivo_excel)
+        centinela = os.path.join(carpeta, f"~${nombre}")
+
+        if not os.path.exists(centinela):
+            print(f"'{nombre}' no está abierto por nadie. Continuando...")
+            return
+
+        print(f"'{nombre}' está abierto. Cerrando esa instancia (sin afectar otros Excel abiertos)...")
+        try:
+            libro_abierto = win32com.client.GetObject(self.archivo_excel)
+            libro_abierto.Close(SaveChanges=False)
+            print(f"'{nombre}' cerrado correctamente.")
+        except Exception as e:
+            print(f"Advertencia: no se pudo cerrar '{nombre}' automáticamente ({e}). "
+                  f"Puede estar abierto desde otra máquina (unidad de red); "
+                  f"se intentará abrir en modo solo lectura.")
 
     def esperar_excel_listo(self, excel, tiempo_max=10):
         inicio = time.time()
@@ -210,18 +151,30 @@ class Process_Excel:
                     raise
 
     def refresh_archivo_excel(self):
-        self.kill_excel()
+        self.cerrar_libro_objetivo()
         """Actualiza todas las conexiones y tablas dinámicas en el archivo Excel."""
         pythoncom.CoInitialize()
         excel = libro = None
-        
+
         try:
             excel = win32com.client.Dispatch("Excel.Application")
             excel.DisplayAlerts = False
             excel.Visible = False
             excel.ScreenUpdating = False
             print(f"Abriendo libro {self.archivo_excel}...")
-            libro = excel.Workbooks.Open(self.archivo_excel)
+            self.libro_solo_lectura = False
+            try:
+                libro = excel.Workbooks.Open(self.archivo_excel)
+            except Exception as e:
+                print(f"No se pudo abrir en modo escritura ({e}). Reintentando en solo lectura...")
+                libro = excel.Workbooks.Open(
+                    self.archivo_excel,
+                    ReadOnly=True,
+                    UpdateLinks=0,
+                    IgnoreReadOnlyRecommended=True
+                )
+                self.libro_solo_lectura = True
+                print("Libro abierto en modo solo lectura (otro usuario/máquina lo tiene abierto).")
             time.sleep(10)
             self.esperar_excel_listo(excel)
             
@@ -325,16 +278,25 @@ class Process_Excel:
                         self._com_retry(lambda: excel.CalculateUntilAsyncQueriesDone())
                         print(f"Capturando {captura_img['rangos_captura_img']} de {captura_img['hojas_captura_img']}")
 
+                        win32clipboard.OpenClipboard()
+                        win32clipboard.EmptyClipboard()
+                        win32clipboard.CloseClipboard()
+
                         rango = self._com_retry(lambda: hoja.Range(captura_img['rangos_captura_img']))
                         self._com_retry(lambda: rango.CopyPicture(Format=2))
-                        time.sleep(5)
+                        secuencia_tras_copia = win32clipboard.GetClipboardSequenceNumber()
 
                         img = None
                         for _ in range(3):
                             img = ImageGrab.grabclipboard()
                             if img:
                                 break
-                            time.sleep(3)
+                            time.sleep(1)
+
+                        if img and win32clipboard.GetClipboardSequenceNumber() != secuencia_tras_copia:
+                            print(f"Portapapeles modificado por otro proceso durante la captura de "
+                                  f"{captura_img['hojas_captura_img']}. Descartando e reintentando.")
+                            img = None
 
                         if img:
                             from PIL import Image
@@ -434,15 +396,18 @@ class Process_Excel:
             except Exception as e:
                 print(f"Error: Error procesando {captura_txt.get('hojas_captura_img', 'hoja desconocida')}: {str(e)}")
         
-        try:
-            print("Guardando...")
-            libro.Save()
-        except Exception as e:
-            print(f"Error al guardar libro: {e}")
-        finally:
-            try: libro.Close(SaveChanges=False)
-            except: pass
-            try: excel.Quit()
-            except: pass
-            pythoncom.CoUninitialize()
+        if getattr(self, 'libro_solo_lectura', False):
+            print("Libro abierto en modo solo lectura: se omite el guardado.")
+        else:
+            try:
+                print("Guardando...")
+                libro.Save()
+            except Exception as e:
+                print(f"Error al guardar libro: {e}")
+
+        try: libro.Close(SaveChanges=False)
+        except: pass
+        try: excel.Quit()
+        except: pass
+        pythoncom.CoUninitialize()
 

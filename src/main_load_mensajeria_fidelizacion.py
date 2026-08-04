@@ -91,7 +91,15 @@ def filtrar_nuevos(df: pd.DataFrame, llaves_existentes: set) -> pd.DataFrame:
     """
     llave_df = list(zip(df["fecha_envio"], df["cuenta"], df["servicio"]))
     mask = [llave not in llaves_existentes for llave in llave_df]
-    return df[mask].reset_index(drop=True)
+    df_filtrado = df[mask].reset_index(drop=True)
+
+    # Eliminar duplicados dentro del propio Excel antes de insertar
+    antes = len(df_filtrado)
+    df_filtrado = df_filtrado.drop_duplicates(subset=LLAVE).reset_index(drop=True)
+    if len(df_filtrado) < antes:
+        print(f"  Duplicados internos del Excel eliminados: {antes - len(df_filtrado):,}")
+
+    return df_filtrado
 
 
 def mover_a_cargado(archivos: list[str], directorio_destino: str) -> None:
